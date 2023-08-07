@@ -26,7 +26,48 @@ board and word consists of only lowercase and uppercase English letters.
 """
 """
 The solution below checked out as 10 times more efficient that the one that i implemented 
+
+revisited new solution is pretty efficient :D 
 """
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+
+        directions = [(1,0),(0,1),(-1,0),(0,-1)]
+
+        array = []
+        visited = set()
+
+        height = len(board)
+        width = len(board[0])
+        count = 0
+        def dfs(i,j,curstr,visited,count):
+
+            if board[i][j] == word[count]:
+                curstr+= board[i][j]
+                count+=1
+                visited.add((i,j))
+                if count == len(word):
+                    array.append(word)
+                    curstr= curstr[:-1:]
+                    count-=1
+                for d in directions:
+                    newx = i + d[0]
+                    newy = j + d[1]
+                    if newx >=0 and newx < height and newy >= 0 and newy < width and (newx,newy) not in visited:
+                        dfs(newx,newy,curstr,visited,count)
+                visited.remove((i,j))
+        
+        for i in range(height):
+            for j in range(width):
+                if board[i][j] == word[count]:
+                    count = 0
+                    visited = set()
+                    dfs(i,j,"",visited,count)
+        
+        for x in array:
+            if x  == word:
+                return True
+        return False
 
 from collections import Counter
 
