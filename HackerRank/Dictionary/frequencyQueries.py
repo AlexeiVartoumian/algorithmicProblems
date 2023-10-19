@@ -111,14 +111,12 @@ def freqQuery(queries):
     for order,number in queries:
        
         if order == 1:
-            # Increase the frequency of 'number'
             prev_freq = frequencies[number]
             frequencies[number] += 1
             freqCounts[prev_freq] -= 1
             freqCounts[frequencies[number]] += 1
         elif order == 2:
             if frequencies[number] > 0:
-                # Decrease the frequency of 'number' if it's greater than 0
                 prev_freq = frequencies[number]
                 frequencies[number] -= 1
                 freqCounts[prev_freq] -= 1
