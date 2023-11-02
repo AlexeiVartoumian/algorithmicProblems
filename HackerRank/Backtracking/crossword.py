@@ -13,10 +13,31 @@ then go through each permutation and return the mutating a copy of the original 
 return the  one permutation "crossword" that succesfully goes through each co-ordinate set.
 """
 
-
+"""
 maze  = ['+-++++++++', '+-++++++++', '+-++++++++', '+-----++++', '+-+++-++++', '+-+++-++++', '+++++-++++', '++------++', '+++++-++++', '+++++-++++']
 string = "LONDON;DELHI;ICELAND;ANKARA"
-
+"""
+maze = ['+-++++++++',
+        '+-++-+++++',
+        '+-------++',
+        '+-++-++-++',
+        '+-++-++-++',
+        '+-++-++-++',
+        '++++-++-++',
+        '+--------+',
+        '++++++++++',
+        '----------']
+string = "CALIFORNIA;LASVEGAS;NIGERIA;CANADA;TELAVIV;ALASKA"
+['+C++++++++', 
+ '+A++T+++++', 
+ '+NIGERIA++', 
+ '+A++L++L++', 
+ '+D++A++A++', 
+ '+A++V++S++', 
+ '++++I++K++', 
+ '+LASVEGAS+', 
+ '++++++++++', 
+ 'CALIFORNIA']
 #arr = ['ICELAND', 'MEXICO', 'PANAMA', 'ALMATY']
 def crosswords(maze, string):
     #step 1 is to generate possible
@@ -52,27 +73,29 @@ def crosswords(maze, string):
                     if inbounds(i+1,j) and maze[i][j] == "-":
                         if maze[i+1][j] == "-":
                             positions.append(downwards(i,j,0,startcoord))
-            if (i,j) not in rightvisited:
+                if (i,j) not in rightvisited:
                     startcoord = (i,j)
                     if inbounds(i,j+1) and maze[i][j] == "-":
                         if maze[i][j+1] == "-":
                             positions.append(rightwards(i,j,0,startcoord))
-    #print(positions)
+    print(positions)
     arr = string.split(";")
     #print(len(positions),len(arr),arr)
     permutations = set()
-    def backtrack(start,arr):
-        
-        if len(arr) == start:
-            permutations.add(tuple(arr))
+    def backtrack(start,arr,arrcopy):
+
+        if len(arrcopy) == len(arr):
+            permutations.add(tuple(arrcopy.copy()))
+            return
         for i in range(start,len(arr)):
             arr[i],arr[start] = arr[start],arr[i]
-            backtrack(start+1,arr)
-            arr[start],arr[i] = arr[start],arr[i]
-        
-      
-    backtrack(0,arr)
-    permutations = [list(perm) for perm in permutations ]
+            arrcopy.append(arr[start])
+            backtrack(start+1,arr,arrcopy)
+            arr[start],arr[i] = arr[i],arr[start]
+            arrcopy.pop()
+    backtrack(0,arr,[])
+   
+    #permutations = [list(perm) for perm in permutations ]
     #print(permutations,len(permutations))
     #[positions,permutations]
     def final(arr,maze,coords):
@@ -124,7 +147,9 @@ def crosswords(maze, string):
                 else:
                     return False
             return maze
-        for i in permutations:
+        #print(permutations,len(permutations))
+        arr2 =[ ['CANADA','TELAVIV','NIGERIA','ALASKA','LASVEGAS','CALIFORNIA']]
+        for i in arr2:
             poss = combo(coords,maze.copy(),i)
             if poss != False:
                 print(poss)
