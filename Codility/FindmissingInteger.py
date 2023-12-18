@@ -46,6 +46,19 @@ otherwise compare each integer with the one ahead of it to check if there is a s
 if that condition never fires then all conditions have been handled and there exists a consecutive list => return last value + 1. cases: 7
 """
 
+"""
+edit: sort the list and ask the question is cur element equal to smallest integer where smallest integer is 1. if so then increment. return the incremented varibale at the end of the loop.
+
+"""
+
+def solution(A):
+
+    A.sort()
+    smallest = 1
+    for i in range(len(A)):
+        if A[i] == smallest : # handle negative integers val equal to one at first pass , skipping values from neg to pos all of that.
+            smallest+=1
+    return smallest
 def solution(A):
     # Implement your solution here
     A.sort()
