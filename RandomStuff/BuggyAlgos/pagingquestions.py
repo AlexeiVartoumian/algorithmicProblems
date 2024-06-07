@@ -16,7 +16,9 @@ from collections import defaultdict
 #pages = [ 3, 12, 6, 6, 5, 8, 13, 5, 7, 7, 14, 12, 7, 13, 3, 9]
 pages = [4, 3, 7, 4, 10, 12, 4, 11, 8, 12, 7, 12, 8, 5, 4, 2, 15, 10, 14,
 13, 8, 1, 2, 2]
-numpageFrames = 7
+pages = [6, 14, 12, 1, 5, 15, 5, 2, 11, 13, 7,
+8, 1]
+numpageFrames = 4
 
 cache = [-1] * numpageFrames
 leastRecentcache = [-1] * numpageFrames
