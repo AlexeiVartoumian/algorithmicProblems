@@ -7,21 +7,26 @@
 ![Equation](svg_equations/equation_2.svg)
 
 <div class="challenge-body-html"><div class="challenge_problem_statement"><div class="msB challenge_problem_statement_body"><div class="hackdown-content"><svg style="display: none;"><defs id="MathJax_SVG_glyphs"></defs></svg><p>A <em>modified Kaprekar number</em> is a positive whole number with a special property.  If you square it, then split the number into two integers and sum those integers, you have the same value you started with.</p>
-<p>Consider a positive whole number  
+<p>Consider a positive whole number
 
 ![Equation](equation_1.svg) with ![Equation](equation_2.svg) digits.  We square ![Equation](equation_3.svg) to arrive at a number that is either ![Equation](equation_4.svg) digits long or 
 
 ![Equation](equation_5.svg) digits long.  Split the string representation of the square into two parts, ![Equation](equation_6.svg) and ![Equation](equation_7.svg).  The right hand part, ![Equation](equation_8.svg) must be ![Equation](equation_9.svg) digits long.  The left is the remaining substring.  Convert those two substrings back to integers, add them and see if you get ![Equation](equation_10.svg).</p>
 <p><strong>Example</strong> </p>
-<p>![Equation](equation_11.svg) <br/>
+<p>
+
+![Equation](equation_11.svg) <br/>
 ![Equation](equation_12.svg) </p>
-<p>First calculate that ![Equation](equation_13.svg). Split that into two strings and convert them back to integers ![Equation](equation_14.svg) and ![Equation](equation_15.svg).  Test ![Equation](equation_16.svg), so this is not a modified Kaprekar number.  If ![Equation](equation_17.svg), still ![Equation](equation_18.svg), and ![Equation](equation_19.svg).  This gives us ![Equation](equation_20.svg), the original ![Equation](equation_21.svg). </p>
+<p>First calculate that 
+
+![Equation](equation_13.svg). Split that into two strings and convert them back to integers ![Equation](equation_14.svg) and ![Equation](equation_15.svg).  Test ![Equation](equation_16.svg), so this is not a modified Kaprekar number.  If ![Equation](equation_17.svg), still ![Equation](equation_18.svg), and ![Equation](equation_19.svg).  This gives us ![Equation](equation_20.svg), the original ![Equation](equation_21.svg). </p>
 <p><strong>Note:</strong> r may have leading zeros.  </p>
 <p>Here's an explanation from Wikipedia about the <strong>ORIGINAL</strong> <a href="https://en.wikipedia.org/wiki/Kaprekar_number">Kaprekar Number</a> (spot the difference!):  </p>
 <blockquote>
 <p>In mathematics, a Kaprekar number for a given base is a non-negative integer, the representation of whose square in that base can be split into two parts that add up to the original number again. For instance, 45 is a Kaprekar number, because 45² = 2025 and 20+25 = 45.</p>
 </blockquote>
-<p>Given two positive integers ![Equation](equation_22.svg) and ![Equation](equation_23.svg) where ![Equation](equation_24.svg) is lower than ![Equation](equation_25.svg), write a program to print the modified Kaprekar numbers in the range between ![Equation](equation_26.svg) and ![Equation](equation_27.svg), inclusive.  If no modified Kaprekar numbers exist in the given range, print <code>INVALID RANGE</code>.  </p>
+<p>Given two positive integers 
+![Equation](equation_22.svg) and ![Equation](equation_23.svg) where ![Equation](equation_24.svg) is lower than ![Equation](equation_25.svg), write a program to print the modified Kaprekar numbers in the range between ![Equation](equation_26.svg) and ![Equation](equation_27.svg), inclusive.  If no modified Kaprekar numbers exist in the given range, print <code>INVALID RANGE</code>.  </p>
 <p><strong>Function Description</strong> </p>
 <p>Complete the <em>kaprekarNumbers</em> function in the editor below.  </p>
 <p>kaprekarNumbers has the following parameter(s):  </p>
