@@ -37,12 +37,12 @@ The second line contains the upper integer limit ![Equation](equation_29.svg).  
 
 
 Consider a positive whole number
-![Equation](equation_1.svg) 
+![Equation](svg_equations/svg_equation_1.svg) 
 
 
-with ![Equation](equation_2.svg) digits.  We square ![Equation](equation_3.svg) to arrive at a number that is either ![Equation](equation_4.svg) digits long or ![Equation](equation_5.svg) digits long.  Split the string representation of the square into two parts, ![Equation](equation_6.svg) and ![Equation](equation_7.svg).  The right hand part, ![Equation](equation_8.svg) must be ![Equation](equation_9.svg) digits long.  The left is the remaining substring.  Convert those two substrings back to integers, add them and see if you get ![Equation](equation_10.svg).</p>
-<p><strong>Example</strong> </p>
-<p>![Equation](equation_11.svg) <br/>
-![Equation](equation_12.svg) </p>
-<p>First calculate that ![Equation](equation_13.svg). Split that into two strings and convert them back to integers ![Equation](equation_14.svg) and ![Equation](equation_15.svg).  Test ![Equation](equation_16.svg), so this is not a modified Kaprekar number.  If ![Equation](equation_17.svg), still ![Equation](equation_18.svg), and ![Equation](equation_19.svg).  This gives us ![Equation](equation_20.svg), the original ![Equation](equation_21.svg). </p>
+with ![Equation](svg_equations/equation_2.svg) digits.  We square ![Equation](svg_equations/equation_3.svg) to arrive at a number that is either ![Equation](svg_equations/equation_4.svg) digits long or ![Equation](svg_equations/equation_5.svg) digits long.  Split the string representation of the square into two parts, ![Equation](svg_equations/equation_6.svg) and ![Equation](svg_equations/equation_7.svg).  The right hand part, ![Equation](svg_equations/equation_8.svg) must be ![Equation](svg_equations/equation_9.svg) digits long.  The left is the remaining substring.  Convert those two substrings back to integers, add them and see if you get ![Equation](svg_equations/equation_10.svg).
+Example
+![Equation](svg_equations/equation_11.svg) 
+![Equation](equation_12.svg) 
+First calculate that ![Equation](svg_equations/equation_13.svg). Split that into two strings and convert them back to integers ![Equation](svg_equations/equation_14.svg) and ![Equation](equation_15.svg).  Test ![Equation](svg_equations/equation_16.svg), so this is not a modified Kaprekar number.  If ![Equation](svg_equations/equation_17.svg), still ![Equation](svg_equations/equation_18.svg), and ![Equation](equation_19.svg).  This gives us ![Equation](equation_20.svg), the original ![Equation](equation_21.svg). </p>
 <p><strong>Note:</strong> r may have leading zeros.  </p>
