@@ -1,7 +1,9 @@
 ![Alt text](svg1.svg)
+
+
 <img src="svg1.svg" alt="SVG image" width="300" height="200">
 
-
+![Equation](equation.svg)
 <div class="challenge-body-html"><div class="challenge_problem_statement"><div class="msB challenge_problem_statement_body"><div class="hackdown-content"><style id="MathJax_SVG_styles">.MathJax_SVG_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
 .MathJax_SVG .MJX-monospace {font-family: monospace}
 .MathJax_SVG .MJX-sans-serif {font-family: sans-serif}
