@@ -2,6 +2,25 @@ import re
 import os
 from bs4 import BeautifulSoup
 
+# def extract_and_save_svg(html_content, output_dir):
+#     soup = BeautifulSoup(html_content, 'html.parser')
+#     svg_spans = soup.find_all('span', class_='MathJax_SVG')
+    
+#     for i, span in enumerate(svg_spans, 1):
+#         svg = span.find('svg')
+#         if svg:
+#             # Extract the SVG content
+#             svg_content = str(svg)
+            
+#             # Save SVG to a file
+#             svg_filename = f'equation_{i}.svg'
+#             with open(os.path.join(output_dir, svg_filename), 'w', encoding='utf-8') as svg_file:
+#                 svg_file.write(svg_content)
+            
+#             # Replace the span with a Markdown image reference
+#             span.replace_with(BeautifulSoup(f'![Equation](equation_{i}.svg)', 'html.parser'))
+    
+#     return str(soup)
 def extract_and_save_svg(html_content, output_dir):
     soup = BeautifulSoup(html_content, 'html.parser')
     svg_spans = soup.find_all('span', class_='MathJax_SVG')
@@ -9,8 +28,28 @@ def extract_and_save_svg(html_content, output_dir):
     for i, span in enumerate(svg_spans, 1):
         svg = span.find('svg')
         if svg:
-            # Extract the SVG content
-            svg_content = str(svg)
+            # Format the SVG content
+            svg['xmlns'] = "http://www.w3.org/2000/svg"
+            svg['xmlns:xlink'] = "http://www.w3.org/1999/xlink"
+            
+            # Remove unnecessary attributes
+            for attr in ['role', 'focusable', 'style']:
+                if attr in svg.attrs:
+                    del svg[attr]
+            
+            # Ensure correct ordering of width, height, and viewBox attributes
+            width = svg.get('width')
+            height = svg.get('height')
+            viewBox = svg.get('viewBox')
+            del svg['width']
+            del svg['height']
+            del svg['viewBox']
+            svg['width'] = width
+            svg['height'] = height
+            svg['viewBox'] = viewBox
+            
+            svg_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+{svg.prettify()}"""
             
             # Save SVG to a file
             svg_filename = f'equation_{i}.svg'
@@ -18,7 +57,7 @@ def extract_and_save_svg(html_content, output_dir):
                 svg_file.write(svg_content)
             
             # Replace the span with a Markdown image reference
-            span.replace_with(BeautifulSoup(f'![Equation](equation_{i}.svg)', 'html.parser'))
+            span.replace_with(BeautifulSoup(f'![Equation]({svg_filename})', 'html.parser'))
     
     return str(soup)
 
@@ -67,7 +106,7 @@ def process_file(input_file, output_file, output_dir):
 
 # Usage
 input_file = 'input.html'
-output_file = 'output.md'
+output_file = 'output3.md'
 output_dir = 'svg_equations'
 process_file(input_file, output_file, output_dir)
 
