@@ -13,22 +13,22 @@ def extract_and_save_svg(html_content, output_dir):
             svg['xmlns'] = "http://www.w3.org/2000/svg"
             svg['xmlns:xlink'] = "http://www.w3.org/1999/xlink"
             
-            # Remove unnecessary attributes
+        
             for attr in ['role', 'focusable', 'style']:
                 if attr in svg.attrs:
                     del svg[attr]
             
-            # Correctly handle viewBox attribute
+            
             width = svg.get('width')
             height = svg.get('height')
             viewBox = svg.get('viewBox') or svg.get('viewbox')  # Check for both cases
             
-            # Remove all variations of viewBox/viewbox
+           
             for attr in list(svg.attrs.keys()):
                 if attr.lower() == 'viewbox':
                     del svg[attr]
             
-            # Set attributes in the correct order
+            
             svg['width'] = width
             svg['height'] = height
             if viewBox:
@@ -64,10 +64,10 @@ def html_to_markdown(element):
         return process_block_content(str(element)) + '\n\n'
 
 def process_block_content(content):
-    # Find the first occurrence of ![Equation] and add two spaces and a newline before it if it's not at the start
+   
     equation_match = re.search(r'\!\[Equation\]', content)
     if equation_match and equation_match.start() > 0:
-        #return content[:equation_match.start()] + '  \n' + content[equation_match.start():]
+        
         return content[:equation_match.start()].rstrip() + '\n\n' + content[equation_match.start():]
     return content
 
@@ -96,7 +96,7 @@ def process_file(input_file, output_file, output_dir):
             markdown_content += html_to_markdown(element)
     
     
-    markdown_content = re.sub(r'([^\n])\s*(\!\[Equation\])', r'\1\n\n\2', markdown_content)
+    #markdown_content = re.sub(r'([^\n])\s*(\!\[Equation\])', r'\1\n\n\2', markdown_content)
     
 
     with open(output_file, 'w', encoding='utf-8') as file:
