@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 from bs4 import BeautifulSoup
 
 def extract_and_save_svg(html_content, output_dir):
@@ -13,21 +14,17 @@ def extract_and_save_svg(html_content, output_dir):
             svg['xmlns'] = "http://www.w3.org/2000/svg"
             svg['xmlns:xlink'] = "http://www.w3.org/1999/xlink"
             
-        
             for attr in ['role', 'focusable', 'style']:
                 if attr in svg.attrs:
                     del svg[attr]
-            
             
             width = svg.get('width')
             height = svg.get('height')
             viewBox = svg.get('viewBox') or svg.get('viewbox')  # Check for both cases
             
-           
             for attr in list(svg.attrs.keys()):
                 if attr.lower() == 'viewbox':
                     del svg[attr]
-            
             
             svg['width'] = width
             svg['height'] = height
@@ -37,15 +34,17 @@ def extract_and_save_svg(html_content, output_dir):
             svg_content = f"""<?xml version="1.0" encoding="UTF-8"?>
 {svg.prettify()}"""
             
-            
-            path ="svg_equations"
+            path = "svg_equations"
             svg_filename = f'equation_{i}.svg'
-            with open(os.path.join(output_dir, svg_filename), 'w', encoding='utf-8') as svg_file:
+            full_path = os.path.join(output_dir, svg_filename)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            with open(full_path, 'w', encoding='utf-8') as svg_file:
                 svg_file.write(svg_content)
             
             # Replace the span with a Markdown image reference
             span.replace_with(BeautifulSoup(f'![Equation]({path}/{svg_filename})', 'html.parser'))
     return str(soup)    
+
 
 def html_to_markdown(element):
     if element.name == 'p':
@@ -71,6 +70,7 @@ def process_block_content(content):
         return content[:equation_match.start()].rstrip() + '\n\n' + content[equation_match.start():]
     return content
 
+
 def process_file(input_file, output_file, output_dir):
     with open(input_file, 'r', encoding='utf-8') as file:
         content = file.read()
@@ -94,19 +94,23 @@ def process_file(input_file, output_file, output_dir):
     for element in elements:
         if element.name:  # Skip NavigableString objects
             markdown_content += html_to_markdown(element)
-    
-    
-    #markdown_content = re.sub(r'([^\n])\s*(\!\[Equation\])', r'\1\n\n\2', markdown_content)
-    
 
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(markdown_content)
 
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python render.py <folder-path>")
+        sys.exit(1)
 
+    folder_path = sys.argv[1]
 
-input_file = 'input.html'
-output_file = 'output.md'
-output_dir = 'svg_equations'
-process_file(input_file, output_file, output_dir)
+    input_file = os.path.join(folder_path, 'input.html')
+    output_file = os.path.join(folder_path, 'output.md')
+    output_dir = os.path.join(folder_path, 'svg_equations')
 
-print(f"Conversion completed. Check {output_file} for the result and {output_dir} for the SVG files.")
+    process_file(input_file, output_file, output_dir)
+    print(f"Conversion completed. Check {output_file} for the result and {output_dir} for the SVG files.")
+
+if __name__ == "__main__":
+    main()

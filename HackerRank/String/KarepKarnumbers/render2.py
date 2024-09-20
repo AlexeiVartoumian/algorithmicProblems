@@ -1,6 +1,6 @@
 import re
 import os
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 
 def extract_and_save_svg(html_content, output_dir):
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -46,30 +46,33 @@ def extract_and_save_svg(html_content, output_dir):
             # Replace the span with a Markdown image reference
             span.replace_with(BeautifulSoup(f'![Equation]({path}/{svg_filename})', 'html.parser'))
     return str(soup)    
+def process_element_with_equations(element):
+    content = str(element)
+    if '![Equation]' in content:
+        # Add newlines before the first equation in the element
+        content = re.sub(r'(\S)(\s*)(\!\[Equation\])', r'\1\n\n\3', content, count=1)
+        # Ensure proper spacing between equations within the element
+        content = re.sub(r'(\!\[Equation\].*?)(\s*)(\!\[Equation\])', r'\1\n\n\3', content)
+    return content
 
 def html_to_markdown(element):
+    if isinstance(element, NavigableString):
+        return str(element)
+    
     if element.name == 'p':
-        return process_block_content(element.decode_contents()) + '\n\n'
+        return process_element_with_equations(element) + '\n\n'
     elif element.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-        return '#' * int(element.name[1]) + ' ' + process_block_content(element.get_text()) + '\n\n'
+        return '#' * int(element.name[1]) + ' ' + process_element_with_equations(element) + '\n\n'
     elif element.name == 'ul':
-        return ''.join('- ' + process_block_content(li.get_text()) + '\n' for li in element.find_all('li')) + '\n'
+        return ''.join('- ' + process_element_with_equations(li) + '\n' for li in element.find_all('li', recursive=False)) + '\n'
     elif element.name == 'ol':
-        return ''.join(f'{i}. ' + process_block_content(li.get_text()) + '\n' for i, li in enumerate(element.find_all('li'), 1)) + '\n'
+        return ''.join(f'{i}. ' + process_element_with_equations(li) + '\n' for i, li in enumerate(element.find_all('li', recursive=False), 1)) + '\n'
     elif element.name == 'blockquote':
-        return ''.join('> ' + process_block_content(p.get_text()) + '\n' for p in element.find_all('p')) + '\n'
+        return ''.join('> ' + process_element_with_equations(p) + '\n' for p in element.find_all('p', recursive=False)) + '\n'
     elif element.name == 'pre':
         return '```\n' + element.get_text() + '\n```\n\n'
     else:
-        return process_block_content(str(element)) + '\n\n'
-
-def process_block_content(content):
-    # Find the first occurrence of ![Equation] and add two spaces and a newline before it if it's not at the start
-    equation_match = re.search(r'\!\[Equation\]', content)
-    if equation_match and equation_match.start() > 0:
-        #return content[:equation_match.start()] + '  \n' + content[equation_match.start():]
-        return content[:equation_match.start()].rstrip() + '\n\n' + content[equation_match.start():]
-    return content
+        return process_element_with_equations(element) + '\n\n'
 
 def process_file(input_file, output_file, output_dir):
     with open(input_file, 'r', encoding='utf-8') as file:
@@ -92,17 +95,13 @@ def process_file(input_file, output_file, output_dir):
     elements = soup.body.children if soup.body else soup.children
     
     for element in elements:
-        if element.name:  # Skip NavigableString objects
-            markdown_content += html_to_markdown(element)
+        markdown_content += html_to_markdown(element)
     
-    
-    markdown_content = re.sub(r'([^\n])\s*(\!\[Equation\])', r'\1\n\n\2', markdown_content)
-    
+    # Final cleanup: remove any triple newlines that might have been introduced
+    markdown_content = re.sub(r'\n{3,}', '\n\n', markdown_content)
 
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(markdown_content)
-
-
 
 input_file = 'input.html'
 output_file = 'output.md'
