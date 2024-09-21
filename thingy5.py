@@ -1,8 +1,8 @@
-import subprocess
 import json
 import yaml
 import os
 import sys
+import subprocess
 
 def lambda_handler(event, context):
     # Debugging information
@@ -12,15 +12,20 @@ def lambda_handler(event, context):
         "Python Version": sys.version,
         "Executable": sys.executable,
         "Current Working Directory": os.getcwd(),
-        "Directory Contents": os.listdir(os.getcwd())
+        "Directory Contents": os.listdir(os.getcwd()),
+        "Temp Directory Contents": os.listdir('/tmp'),
+        "Environment Variables": dict(os.environ)
     }
     
-    # Try to locate ansible-playbook
-    try:
-        ansible_playbook_path = subprocess.check_output(["which", "ansible-playbook"], text=True).strip()
-        debug_info["ansible-playbook location"] = ansible_playbook_path
-    except subprocess.CalledProcessError:
-        debug_info["ansible-playbook location"] = "Not found in PATH"
+    # Try to find ansible-playbook in PATH
+    ansible_playbook_path = None
+    for path in os.environ.get("PATH", "").split(os.pathsep):
+        full_path = os.path.join(path, "ansible-playbook")
+        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+            ansible_playbook_path = full_path
+            break
+    
+    debug_info["ansible-playbook location"] = ansible_playbook_path or "Not found in PATH"
 
     # Define the playbook content in YAML format
     playbook = [
@@ -45,7 +50,7 @@ def lambda_handler(event, context):
         yaml.dump(playbook, f)
 
     # Command to run the ansible-playbook with the playbook file
-    command = ['ansible-playbook', playbook_path]
+    command = [ansible_playbook_path or 'ansible-playbook', playbook_path]
 
     try:
         # Run the ansible-playbook command using subprocess
