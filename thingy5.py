@@ -89,3 +89,113 @@ def lambda_handler(event, context):
                 'debug_info': debug_info
             })
         }
+    
+
+import sys
+import os
+
+# Add the Ansible modules to the Python path
+sys.path.append("/opt/python/lib/python3.9/site-packages")
+
+from ansible.module_utils.common.collections import ImmutableDict
+from ansible.parsing.dataloader import DataLoader
+from ansible.vars.manager import VariableManager
+from ansible.inventory.manager import InventoryManager
+from ansible.playbook.play import Play
+from ansible.executor.task_queue_manager import TaskQueueManager
+from ansible.plugins.callback import CallbackBase
+from ansible import context
+
+class ResultCallback(CallbackBase):
+    def __init__(self):
+        super().__init__()
+        self.host_ok = {}
+        self.host_unreachable = {}
+        self.host_failed = {}
+
+    def v2_runner_on_ok(self, result, **kwargs):
+        self.host_ok[result._host.get_name()] = result
+
+    def v2_runner_on_unreachable(self, result):
+        self.host_unreachable[result._host.get_name()] = result
+
+    def v2_runner_on_failed(self, result, **kwargs):
+        self.host_failed[result._host.get_name()] = result
+
+def run_ansible_task(host, module, args):
+    context.CLIARGS = ImmutableDict(connection='local', module_path=['/to/mymodules'], forks=10, become=None,
+                                    become_method=None, become_user=None, check=False, diff=False)
+
+    sources = f"{host},"
+    loader = DataLoader()
+    inventory = InventoryManager(loader=loader, sources=sources)
+    variable_manager = VariableManager(loader=loader, inventory=inventory)
+
+    play_source = dict(
+        name="Ansible Play",
+        hosts=host,
+        gather_facts='no',
+        tasks=[dict(action=dict(module=module, args=args))]
+    )
+
+    play = Play().load(play_source, variable_manager=variable_manager, loader=loader)
+
+    callback = ResultCallback()
+    tqm = None
+
+    try:
+        tqm = TaskQueueManager(
+            inventory=inventory,
+            variable_manager=variable_manager,
+            loader=loader,
+            passwords=dict(),
+            stdout_callback=callback
+        )
+        result = tqm.run(play)
+    finally:
+        if tqm is not None:
+            tqm.cleanup()
+
+    return callback.host_ok, callback.host_failed, callback.host_unreachable
+
+def lambda_handler(event, context):
+    print(f"Python version: {sys.version}")
+    print(f"sys.path: {sys.path}")
+    
+    try:
+        import ansible
+        print(f"Ansible version: {ansible.__version__}")
+        
+        # Example: Run an Ansible task
+        host_ok, host_failed, host_unreachable = run_ansible_task('localhost', 'ping', {})
+        
+        if host_ok:
+            result = host_ok['localhost']._result
+            return {
+                'statusCode': 200,
+                'body': f'Ansible task executed successfully. Result: {result}'
+            }
+        elif host_failed:
+            result = host_failed['localhost']._result
+            return {
+                'statusCode': 500,
+                'body': f'Ansible task failed. Error: {result}'
+            }
+        elif host_unreachable:
+            result = host_unreachable['localhost']._result
+            return {
+                'statusCode': 500,
+                'body': f'Host unreachable. Error: {result}'
+            }
+    except ImportError as e:
+        print(f"Error importing Ansible: {e}")
+        return {
+            'statusCode': 500,
+            'body': f'Failed to import Ansible: {str(e)}'
+        }
+    except Exception as e:
+        print(f"Error executing Ansible task: {e}")
+        return {
+            'statusCode': 500,
+            'body': f'Error executing Ansible task: {str(e)}'
+        }
