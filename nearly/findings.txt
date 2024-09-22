@@ -1,0 +1,7 @@
+https://github.com/ansible/ansible/issues/18469
+
+
+approach on trying to use as a layer 
+first was that ansible is too big to directl go on a layer
+then even after manging to get core modules on the problem was that 
+lambda does not support multi-porcessing 
