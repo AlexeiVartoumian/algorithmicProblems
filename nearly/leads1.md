@@ -113,7 +113,7 @@ Add the following line at the end of the file:
 Copy
 export PATH=$PATH:$HOME/.local/bin
 Save and exit the nano editor (Ctrl+X, then Y, then Enter).
-Source your .bashrc file to apply the changes:
+Source your .bashrc file to apply the changes: 
 
 Copy
 source ~/.bashrc
@@ -152,3 +152,5 @@ Run the playbook:
 Copy
 ansible-playbook test.yml
 If this works, you're all set to proceed with creating and running the EC2 instance creation playbook. Let me know if you encounter any other issues!
+
+
