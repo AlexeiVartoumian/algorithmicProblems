@@ -1,0 +1,42 @@
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "AIDAVV6SK6W4J7BR4JLEU",
+        "arn": "arn:aws:iam::390746273208:user/Alex",
+        "accountId": "390746273208",
+        "accessKeyId": "ASIAVV6SK6W4N7FVGCHO",
+        "userName": "Alex",
+        "sessionContext": {
+            "sessionIssuer": {},
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2024-11-12T20:03:40Z",
+                "mfaAuthenticated": "false"
+            }
+        }
+    },
+    "eventTime": "2024-11-12T21:21:15Z",
+    "eventSource": "config.amazonaws.com",
+    "eventName": "DeleteConfigurationAggregator",
+    "awsRegion": "eu-west-2",
+    "sourceIPAddress": "13.42.43.117",
+    "userAgent": "aws-cli/2.19.1 md/awscrt#0.22.0 ua/2.0 os/linux#6.1.112-124.190.amzn2023.x86_64 md/arch#x86_64 lang/python#3.12.6 md/pyimpl#CPython exec-env/CloudShell cfg/retry-mode#standard md/installer#exe md/distrib#amzn.2023 md/prompt#off md/command#configservice.delete-configuration-aggregator",
+    "requestParameters": {
+        "configurationAggregatorName": "test-aggregator"
+    },
+    "responseElements": null,
+    "requestID": "28a86921-e95d-472d-94d9-fb1b697cc954",
+    "eventID": "c137255a-e079-4cbf-88fd-936baf90f4c2",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "390746273208",
+    "eventCategory": "Management",
+    "tlsDetails": {
+        "tlsVersion": "TLSv1.3",
+        "cipherSuite": "TLS_AES_128_GCM_SHA256",
+        "clientProvidedHostHeader": "config.eu-west-2.amazonaws.com"
+    },
+    "sessionCredentialFromConsole": "true"
+}

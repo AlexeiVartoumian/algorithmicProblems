@@ -1,0 +1,64 @@
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "AROAVV6SK6W4KY3KZOPI7:AWSConfig",
+        "arn": "arn:aws:sts::390746273208:assumed-role/AWSServiceRoleForConfigMultiAccountSetup/AWSConfig",
+        "accountId": "390746273208",
+        "accessKeyId": "ASIAVV6SK6W4DKAHU2LS",
+        "sessionContext": {
+            "sessionIssuer": {
+                "type": "Role",
+                "principalId": "AROAVV6SK6W4KY3KZOPI7",
+                "arn": "arn:aws:iam::390746273208:role/aws-service-role/config-multiaccountsetup.amazonaws.com/AWSServiceRoleForConfigMultiAccountSetup",
+                "accountId": "390746273208",
+                "userName": "AWSServiceRoleForConfigMultiAccountSetup"
+            },
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2024-11-12T21:07:39Z",
+                "mfaAuthenticated": "false"
+            }
+        },
+        "invokedBy": "config-multiaccountsetup.amazonaws.com"
+    },
+    "eventTime": "2024-11-12T21:07:39Z",
+    "eventSource": "config.amazonaws.com",
+    "eventName": "PutConfigRule",
+    "awsRegion": "eu-west-2",
+    "sourceIPAddress": "config-multiaccountsetup.amazonaws.com",
+    "userAgent": "config-multiaccountsetup.amazonaws.com",
+    "requestParameters": {
+        "configRule": {
+            "configRuleState": "ACTIVE",
+            "scope": {},
+            "configRuleId": "config-rule-4fdaxo",
+            "description": "Test org rule",
+            "createdBy": "config-multiaccountsetup.amazonaws.com",
+            "configRuleName": "OrgConfigRule-test-org-config-rule-l3b8ekjr",
+            "source": {
+                "sourceIdentifier": "S3_BUCKET_VERSIONING_ENABLED",
+                "owner": "AWS"
+            },
+            "configRuleArn": "arn:aws:config:eu-west-2:390746273208:config-rule/aws-service-rule/config-multiaccountsetup.amazonaws.com/config-rule-4fdaxo"
+        }
+    },
+    "responseElements": null,
+    "requestID": "7d86fb81-8b7b-4a6c-8a98-d40e34be5c85",
+    "eventID": "115b5ead-d2b5-45c6-9f70-428aca15ab72",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "390746273208",
+    "eventCategory": "Management"
+}
+
+aws configservice put-organization-config-rule \
+    --organization-config-rule-name test-org-config-rule \
+    --organization-managed-rule-metadata '{
+        "RuleIdentifier": "S3_BUCKET_VERSIONING_ENABLED",
+        "Description": "Test org rule"
+    }'
+
+# Delete
+aws configservice delete-organization-config-rule --organization-config-rule-name test-org-config-rule
