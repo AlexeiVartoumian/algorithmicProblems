@@ -1,0 +1,42 @@
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "AIDAVV6SK6W4J7BR4JLEU",
+        "arn": "arn:aws:iam::390746273208:user/Alex",
+        "accountId": "390746273208",
+        "accessKeyId": "ASIAVV6SK6W4INYG5AZN",
+        "userName": "Alex",
+        "sessionContext": {
+            "sessionIssuer": {},
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2024-11-12T20:03:40Z",
+                "mfaAuthenticated": "false"
+            }
+        }
+    },
+    "eventTime": "2024-11-12T21:30:25Z",
+    "eventSource": "config.amazonaws.com",
+    "eventName": "DeleteRetentionConfiguration",
+    "awsRegion": "eu-west-2",
+    "sourceIPAddress": "13.42.43.117",
+    "userAgent": "aws-cli/2.19.1 md/awscrt#0.22.0 ua/2.0 os/linux#6.1.112-124.190.amzn2023.x86_64 md/arch#x86_64 lang/python#3.12.6 md/pyimpl#CPython exec-env/CloudShell cfg/retry-mode#standard md/installer#exe md/distrib#amzn.2023 md/prompt#off md/command#configservice.delete-retention-configuration",
+    "requestParameters": {
+        "retentionConfigurationName": "default"
+    },
+    "responseElements": null,
+    "requestID": "b78dd69e-077e-40f2-a404-2eab4c2e37c5",
+    "eventID": "09a9a7da-2dbd-483a-9b4c-179bddd6d113",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "390746273208",
+    "eventCategory": "Management",
+    "tlsDetails": {
+        "tlsVersion": "TLSv1.3",
+        "cipherSuite": "TLS_AES_128_GCM_SHA256",
+        "clientProvidedHostHeader": "config.eu-west-2.amazonaws.com"
+    },
+    "sessionCredentialFromConsole": "true"
+}
