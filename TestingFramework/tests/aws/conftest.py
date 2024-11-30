@@ -11,14 +11,14 @@ class AccountsConfig:
     def __init__(self , environment=''):
     
         #this might have to be exteneded for future customizations outside of Iam-roles
-        self.base_config_path= 'aft-global-customization/terraform/iam-user-roles-interface'
+        self.base_config_path= 'aft-global-customizations/terraform/iam-user-roles-interface'
 
         #all vended account metadata is stored in dynamodb tables in the aft management account
         self.account_data = self.retrieve_managed_accounts_from_dynamo()
         self.region = "eu-west-1"
 
         #way to go would be to add additional reads 
-        with open(f'{self.base_config_path}/config{environment}/json' ,'r') as f:
+        with open(f'{self.base_config_path}/config{environment}.json' ,'r') as f:
             self.config = json.load(f)
         
         with open(f'{self.base_config_path}/json/roles.json' , 'r') as r:
@@ -34,9 +34,9 @@ class AccountsConfig:
             if roles_entry['role_name'] == role_name:
                 return roles_entry
     
-    def retrieve_manage_accounts_from_dynamo(self):
+    def retrieve_managed_accounts_from_dynamo(self):
 
-        dynamodb = boto3.resource('dyanomodb')
+        dynamodb = boto3.resource('dynamodb')
 
         metadata_table = dynamodb.Table('aft-request-metadata')
         request_table = dynamodb.Table('aft-request')
@@ -44,15 +44,15 @@ class AccountsConfig:
         metadata_response = metadata_table.scan(ProjectionExpression = 'id , email')
         metadata_items = metadata_response.get('Items', [])
 
-        request_response = metadata_table.scan(ProjectionExpression = 'id , custom_fields')
-        request_items = request_response.response.get('Items', [])
+        request_response = request_table.scan(ProjectionExpression = 'id , custom_fields')
+        request_items = request_response.get('Items', [])
 
         custom_fields_by_email = { item['id'] : item.get('custom_fields', '{}') for item in request_items}
 
         account_data = []
 
         for metadata_item in metadata_items :
-            account_id = metadata_items['id']
+            account_id = metadata_item['id']
             email = metadata_item['email']
 
             custom_fields = custom_fields_by_email.get(email , '{}')
@@ -62,7 +62,7 @@ class AccountsConfig:
             else:
                 custom_fields_dict = custom_fields
             
-            account_name = custom_fields_dict['Acccount_name']
+            account_name = custom_fields_dict['AccountName']
             account_data.append({
                 'account_id': account_id,
                 'account_name' : account_name

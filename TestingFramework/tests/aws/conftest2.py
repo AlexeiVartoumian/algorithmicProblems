@@ -28,7 +28,7 @@ class AccountsConfig:
 
         self.additional_roles = {} 
 
-        additional_path = Path(self.addtional_roles_path)
+        additional_path = Path(self.additional_roles_path)
 
         if additional_path.exists():
             for role_file in additional_path.glob('*.json'):
