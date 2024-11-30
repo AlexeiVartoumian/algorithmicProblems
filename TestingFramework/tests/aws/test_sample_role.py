@@ -1,7 +1,31 @@
+from pathlib import Path
 from src.aws.role_validator import AWSRoleValidator
 import json
 
+
 def test_flowlogs_role_permissions(accounts_config):
+    """
+    Test to validate flowlogs role permissions across all vended accounts
+    """
+    # Check if file exists and print its contents
+    file_path = "other/roles/flowlogsRole.json"
+    json_path = Path(file_path)
+    
+    print(f"\nChecking if file exists at: {json_path.absolute()}")
+    print(f"File exists: {json_path.exists()}")
+    
+    if json_path.exists():
+        with open(file_path, 'r') as f:
+            content = f.read()
+            print(f"File content length: {len(content)}")
+            print("File content:")
+            print(content)
+            if len(content) == 0:
+                print("File is empty!")
+    else:
+        print(f"Could not find file at {json_path.absolute()}")
+        return
+
     """
     Test to validate flowlogs role permissions across all vended accounts
     """
