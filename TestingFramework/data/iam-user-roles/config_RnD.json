@@ -1,0 +1,13 @@
+{
+    "AccountGroups": {
+        "rnd-eu-sandbox02" : [
+            "CloudAdmin",
+            "ReadOnly"
+        ]
+    },
+    "AccountId": {
+        "eu-west-1": {
+            "rnd-eu-sandbox02" : "12345678" 
+        }
+    }
+}
