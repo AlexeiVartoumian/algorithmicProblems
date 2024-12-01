@@ -61,8 +61,8 @@ class AWSRoleValidator:
             policy_metadata = self.iam.get_policy(PolicyArn=policy_arn)
             default_version_id = policy_metadata['Policy']['DefaultVersionId']
 
-            policy_version = self.iam.get_policy(
-                policyArn=policy_arn,
+            policy_version = self.iam.get_policy_version(
+                PolicyArn=policy_arn,
                 VersionId=default_version_id
             )
 
