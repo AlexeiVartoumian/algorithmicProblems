@@ -1,4 +1,13 @@
+[
+    {
+        "role_name": "flowlogsRole"
+    },
+    {
+        "role_name" : "ec2-dns"
+    }
+    
 
-{
-    "role_name": "flowlogsRole"
-}
+]
+
+    
+    
