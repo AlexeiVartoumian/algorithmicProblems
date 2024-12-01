@@ -38,11 +38,18 @@ def test_flowlogs_role_permissions(accounts_config):
         print(f"Testing flowlogs role in {account_id}:{account_name}")
         
         validator = AWSRoleValidator(account_id)
+        role_name = f"{region}.{account_name}.role.flowlogsRole"
+
+        # Let's see what policies are actually attached
+        attached_policies = validator.iam.list_attached_role_policies(RoleName=role_name)
+        print("\nAttached policies:")
+        for policy in attached_policies['AttachedPolicies']:
+            print(f"Policy Name: {policy['PolicyName']}")
+            print(f"Policy ARN: {policy['PolicyArn']}")
         
-        # Test flowlogs role specifically
         result = validator.compare_role_permissions(
-            f"{region}.{account_name}.role.flowlogsRole",
+            role_name,
             "other/roles/flowlogsRole.json",
-            f"{region}.{account_name}.policy.flowlogsRole_policy"
+            f"{region}.{account_name}.policy.flowlogsRole_policy"  # This might need to change
         )
-        assert result is True, f"Flowlogs role validation failed for account {account_name}"
+        assert result is True
