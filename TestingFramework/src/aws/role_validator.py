@@ -18,11 +18,6 @@ class AWSRoleValidator:
         self.iam = self.session.client('iam')
     
 
-    # depending on which folder this will either use list_attached_role_policies(RoleName=role_name)
-    # or  inline_policies = validator.iam.list_role_policies(RoleName=role['RoleName'])
-
-    def assume_role_or_service_role( self,  role_file: str ) -> bool :
-
     def compare_role_permissions(self, role_name: str , role_file: str , policy_name: str) -> bool:
 
         with open(role_file, 'r') as f :
