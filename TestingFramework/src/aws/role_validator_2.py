@@ -13,8 +13,8 @@ class AWSRoleValidator:
     def __init__(self , account_id):
         
         self.account_id = account_id
-        self.role_manager.assume_role()
-
+        self.role_manager=AWSRoleManager(account_id)
+        self.session = self.role_manager.assume_role()
         self.iam = self.session.client('iam')
     
     def assume_role_or_service_role(self, role_file: str) -> bool:
@@ -62,7 +62,7 @@ class AWSRoleValidator:
             default_version_id = policy_metadata['Policy']['DefaultVersionId']
 
             policy_version = self.iam.get_policy(
-                olicyArn=policy_arn,
+                policyArn=policy_arn,
                 VersionId=default_version_id
             )
 

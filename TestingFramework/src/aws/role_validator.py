@@ -13,8 +13,8 @@ class AWSRoleValidator:
     def __init__(self , account_id):
         
         self.account_id = account_id
+        self.role_manager=AWSRoleManager(account_id)
         self.role_manager.assume_role()
-
         self.iam = self.session.client('iam')
     
 
