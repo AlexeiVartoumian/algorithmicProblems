@@ -1,9 +1,11 @@
 [
     {
-        "role_name": "flowlogsRole"
+        "role_name": "flowlogsRole",
+        "is_global": false
     },
     {
-        "role_name" : "ec2-dns"
+        "role_name" : "ec2-dns",
+        "is_global": true
     }
     
 

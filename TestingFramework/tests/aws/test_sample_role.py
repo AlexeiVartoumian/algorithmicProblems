@@ -21,7 +21,12 @@ def test_service_role_permissions(accounts_config):
             role_name = role['role_name']
             # This path pattern is what the validator checks for
             policy_file = f"other/policies/{role_name}_policy.json"
-            aws_role_name = f"{region}.{account_name}.role.{role_name}"
+
+            is_global = role.get('is_global', False)  
+            if is_global:
+                aws_role_name = f"{region}.global.role.{role_name}"
+            else:
+                aws_role_name = f"{region}.{account_name}.role.{role_name}"
             
             print(f"\nTesting {role_name} in account {account_id}:{account_name}")
 
