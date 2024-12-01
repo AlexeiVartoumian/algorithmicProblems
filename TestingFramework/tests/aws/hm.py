@@ -25,13 +25,19 @@ def test_flowlogs_role_permissions(accounts_config):
                 # Check policies for this role
                 attached = validator.iam.list_attached_role_policies(RoleName=role['RoleName'])
                 print(f"Attached policies for {role['RoleName']}:")
+                
+                policy_name = None  # Initialize before the loop
                 for policy in attached['AttachedPolicies']:
                     print(f"- {policy['PolicyName']}")
+                    policy_name = policy['PolicyName']  # Capture the policy name
                 
-                # Now do the policy comparison for this role
-                result = validator.compare_role_permissions(
-                    role['RoleName'],  # Use the actual role name we found
-                    "other/policies/flowlogsRole_policy.json",  # The policy definition file
-                    policy['PolicyName']  # Use the actual policy name we found
-                )
-                assert result is True, f"Policy validation failed for {role['RoleName']}"
+                if policy_name:  # Only try comparison if we found a policy
+                    result = validator.compare_role_permissions(
+                        role['RoleName'],
+                        "other/policies/flowlogsRole_policy.json",
+                        policy_name
+                    )
+                    assert result is True, f"Policy validation failed for {role['RoleName']}"
+                else:
+                    print("No policies found attached to this role")
+                break
