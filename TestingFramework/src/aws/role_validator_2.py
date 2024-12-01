@@ -19,7 +19,7 @@ class AWSRoleValidator:
     
     def assume_role_or_service_role(self, role_file: str) -> bool:
     
-        return 'other/roles' in role_file
+        return 'other/policies' in role_file
 
     def compare_role_permissions(self, role_name: str, role_file: str, policy_name: str) -> bool:
         
