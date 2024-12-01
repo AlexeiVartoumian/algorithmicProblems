@@ -17,43 +17,62 @@ class AWSRoleValidator:
 
         self.iam = self.session.client('iam')
     
+    def assume_role_or_service_role(self, role_file: str) -> bool:
+    
+        return 'other/roles' in role_file
 
-    # depending on which folder this will either use list_attached_role_policies(RoleName=role_name)
-    # or  inline_policies = validator.iam.list_role_policies(RoleName=role['RoleName'])
-
-    def assume_role_or_service_role( self,  role_file: str ) -> bool :
-
-    def compare_role_permissions(self, role_name: str , role_file: str , policy_name: str) -> bool:
-
-        with open(role_file, 'r') as f :
+    def compare_role_permissions(self, role_name: str, role_file: str, policy_name: str) -> bool:
+        
+        with open(role_file, 'r') as f:
             expected_policy = json.load(f)
+    
+    
+        if self.assume_role_or_service_role(role_file):
+            # Handle inline policies for service roles
+            inline_policies = self.iam.list_role_policies(RoleName=role_name)
+            for policy_name in inline_policies['PolicyNames']:
+                policy_doc = self.iam.get_role_policy(
+                    RoleName=role_name,
+                    PolicyName=policy_name
+                )
+                actual_policy = {
+                    "Version": policy_doc['PolicyDocument'].get("Version", "2012-10-17"),
+                    "Statement": policy_doc['PolicyDocument'].get("Statement", [])
+                }
+                return self.compare_policies(expected_policy, actual_policy, role_name)
         
-        attached_policies = self.iam.list_attached_role_policies(RoleName=role_name)
-        policy_arn = None
-
-        for policy in attached_policies['AttachedPolicies']:
-            logging.info(policy)
-            if policy['PolicyName'] == policy_name:
-                policy_arn = policy['PolicyArn']
-                break
-        
-        if not policy_arn:
-            logging.error(f"Policy {policy_name} not found attached to role {role_name}")
+            logging.error(f"No inline policies found for service role {role_name}")
             return False
+        else:
+            
+            attached_policies = self.iam.list_attached_role_policies(RoleName=role_name)
+            policy_arn = None
 
-        policy_metadata = self.iam.get_policy(PolicyArn=policy_arn)
-        default_version_id = policy_metadata['Policy']['DefaultVersionId']
+            for policy in attached_policies['AttachedPolicies']:
+                logging.info(policy)
+                if policy['PolicyName'] == policy_name:
+                    policy_arn = policy['PolicyArn']
+                    break
+        
+            if not policy_arn:
+                logging.error(f"Policy {policy_name} not found attached to role {role_name}")
+                return False
 
-        policy_version = self.iam.get_policy(
-            PolicyArn = policy_arn,
-            VersionId = default_version_id
-        )
+            policy_metadata = self.iam.get_policy(PolicyArn=policy_arn)
+            default_version_id = policy_metadata['Policy']['DefaultVersionId']
 
-        actual_policy = {
-            "Version": policy_version['PolicyVersion']['Document'].get("Version", "2012-10-17"),
-            "Statement": policy_version['PolicyVersion']['Document'].get("Statement", [])
-        }
-        return self.compare_policies(expected_policy, actual_policy , role_name)
+            policy_version = self.iam.get_policy(
+                olicyArn=policy_arn,
+                VersionId=default_version_id
+            )
+
+            actual_policy = {
+                "Version": policy_version['PolicyVersion']['Document'].get("Version", "2012-10-17"),
+                "Statement": policy_version['PolicyVersion']['Document'].get("Statement", [])
+            }
+            return self.compare_policies(expected_policy, actual_policy, role_name)
+    
+
 
 
     def compare_policies(self , expected: Dict[str, Any] , actual: Dict[str, Any], role_name: str):
