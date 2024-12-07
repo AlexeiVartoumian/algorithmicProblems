@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudWatch Logging Resources for Organization CloudTrail
+
+Parameters:
+  TrailName:
+    Type: String
+    Default: 'org-cloudtrail'
+    Description: 'Name for the Organization CloudTrail'
+
+Resources:
+  CloudTrailLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/cloudtrail/${TrailName}'
+      RetentionInDays: 14
+
+  CloudTrailRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${TrailName}-cloudwatch-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudTrailCloudWatchPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !GetAtt CloudTrailLogGroup.Arn
+
+Outputs:
+  CloudTrailLogGroupArn:
+    Description: ARN of the CloudWatch Log Group
+    Value: !GetAtt CloudTrailLogGroup.Arn
+
+  CloudTrailRoleArn:
+    Description: ARN of the CloudTrail CloudWatch Role
+    Value: !GetAtt CloudTrailRole.Arn
