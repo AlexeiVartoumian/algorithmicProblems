@@ -11,3 +11,6 @@ aws cloudtrail start-logging --name org-cloudtrail
 aws cloudtrail stop-logging --name org-cloudtrail
 
 //https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-delegated-administrator.html
+
+// need to create the cloudwatch group in log acc first then delegate admin as prereq for management 
+// then cli comm only 
