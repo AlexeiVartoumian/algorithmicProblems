@@ -1,0 +1,78 @@
+AFT_ACCOUNT_ID          
+AFT_VAULT_NAME        
+MGMT_VAULT_NAME       
+
+The flow works like this:
+
+In AFT Account:
+
+Backup event occurs
+EventBridge rule catches the event
+Forwards event to management account's default event bus
+
+
+In Management Account:
+
+Event arrives on default event bus
+EventBridge rule catches the event
+Triggers the Lambda function
+Lambda checks/creates vault and copies backup
+
+
+# In AFT Account (Source):
+# EventBridge rule to forward backup events to management account
+AftEventRule:
+  Properties:
+    Name: "forward-backup-events"
+    Description: "Forward AWS Backup events to management account"
+    EventPattern:
+      source: ["aws.backup"]
+      detail-type: ["AWS Backup Job State Change"]
+      detail:
+        state: ["COMPLETED"]
+        backupVaultName: ["${AFT_VAULT_NAME}"]
+    Targets:
+      - Arn: "arn:aws:events:${AWS_REGION}:${MGMT_ACCOUNT_ID}:event-bus/default"
+        RoleArn: "arn:aws:iam::${AFT_ACCOUNT_ID}:role/EventBridgeForwardRole"
+        Id: "ForwardToManagement"
+
+# Required IAM role in AFT account
+EventBridgeForwardRole:
+  Properties:
+    AssumeRolePolicyDocument:
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service: events.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: "PutEventsToManagementAccount"
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action: events:PutEvents
+              Resource: "arn:aws:events:${AWS_REGION}:${MGMT_ACCOUNT_ID}:event-bus/default"
+
+# In Management Account (Destination):
+# EventBridge rule to trigger Lambda
+ManagementEventRule:
+  Properties:
+    Name: "trigger-backup-sync-lambda"
+    Description: "Trigger Lambda for backup sync from AFT account"
+    EventPattern:
+      source: ["aws.backup"]
+      detail-type: ["AWS Backup Job State Change"]
+      detail:
+        state: ["COMPLETED"]
+        backupVaultName: ["${AFT_VAULT_NAME}"]
+    Targets:
+      - Arn: "${LAMBDA_FUNCTION_ARN}"
+        Id: "TriggerBackupSyncLambda"
+
+# Required Lambda permissions in management account
+LambdaPermission:
+  Properties:
+    Action: "lambda:InvokeFunction"
+    FunctionName: "${LAMBDA_FUNCTION_NAME}"
+    Principal: "events.amazonaws.com"
+    SourceArn: "${MANAGEMENT_EVENT_RULE_ARN}"
