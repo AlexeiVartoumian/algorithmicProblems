@@ -52,3 +52,41 @@ AND (
 )
 GROUP BY useridentity.username, eventname
 ORDER BY action_count DESC;
+
+
+-- Basic query to get all Service Catalog related events
+SELECT 
+    eventtime,
+    eventname,
+    useridentity.username,
+    sourceipaddress,
+    awsregion,
+    requestparameters,
+    responseelements
+FROM cloudtrail_logs
+WHERE 
+    eventsource = 'servicecatalog.amazonaws.com'
+ORDER BY eventtime DESC
+LIMIT 1000;
+
+-- Query to focus on specific Service Catalog actions that might contain sensitive info
+SELECT 
+    eventtime,
+    eventname,
+    useridentity.username,
+    requestparameters
+FROM cloudtrail_logs
+WHERE 
+    eventsource = 'servicecatalog.amazonaws.com'
+    AND eventname IN (
+        'CreatePortfolio',
+        'CreateProduct',
+        'CreateProvisioningArtifact',
+        'UpdateProduct',
+        'UpdateProvisioningArtifact',
+        'UpdatePortfolio',
+        'ProvisionProduct',
+        'UpdateProvisionedProduct'
+    )
+ORDER BY eventtime DESC
+LIMIT 1000;
