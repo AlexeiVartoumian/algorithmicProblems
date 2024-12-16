@@ -100,3 +100,53 @@ PARTITION (year='2024', month='01', day='02')
 LOCATION 's3://your-bucket/AWSLogs/your-account-id/CloudTrail/region/year=2024/month=01/day=02/'
 PARTITION (year='2024', month='01', day='03') 
 LOCATION 's3://your-bucket/AWSLogs/your-account-id/CloudTrail/region/year=2024/month=01/day=03/';
+
+
+-- Basic query to examine usernames for common PII patterns - Recent data only
+SELECT DISTINCT useridentity.username,
+       eventtime,
+       eventname,
+       sourceipaddress
+FROM cloudtrail_logs_partitioned
+WHERE 
+    year = '2024' AND month = '01' AND day IN ('01', '02', '03')
+    AND (
+        -- Email-like patterns
+        useridentity.username LIKE '%@%.%'
+        -- Looking for sensitive keywords
+        OR LOWER(useridentity.username) LIKE '%password%'
+        OR LOWER(useridentity.username) LIKE '%secret%'
+        OR LOWER(useridentity.username) LIKE '%key%'
+        OR LOWER(useridentity.username) LIKE '%token%'
+        OR LOWER(useridentity.username) LIKE '%pwd%'
+        OR LOWER(useridentity.username) LIKE '%credential%'
+    )
+ORDER BY eventtime DESC;
+
+-- Query to analyze username patterns across regions - Recent data only
+SELECT awsregion,
+       useridentity.username,
+       COUNT(*) as action_count
+FROM cloudtrail_logs_partitioned
+WHERE 
+    year = '2024' AND month = '01' AND day IN ('01', '02', '03')
+    AND useridentity.username LIKE '%@%.%'
+GROUP BY awsregion, useridentity.username
+ORDER BY action_count DESC;
+
+-- Query to identify potentially sensitive actions - Recent data only
+SELECT useridentity.username,
+       eventname,
+       COUNT(*) as action_count
+FROM cloudtrail_logs_partitioned
+WHERE 
+    year = '2024' AND month = '01' AND day IN ('01', '02', '03')
+    AND useridentity.username LIKE '%@%.%'
+    AND (
+        eventname LIKE '%Secret%'
+        OR eventname LIKE '%Password%'
+        OR eventname LIKE '%Credential%'
+        OR eventname LIKE '%Key%'
+    )
+GROUP BY useridentity.username, eventname
+ORDER BY action_count DESC;
