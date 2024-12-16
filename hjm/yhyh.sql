@@ -90,3 +90,13 @@ WHERE
     )
 ORDER BY eventtime DESC
 LIMIT 1000;
+
+
+
+ALTER TABLE cloudtrail_logs_partitioned ADD
+PARTITION (year='2024', month='01', day='01') 
+LOCATION 's3://your-bucket/AWSLogs/your-account-id/CloudTrail/region/year=2024/month=01/day=01/'
+PARTITION (year='2024', month='01', day='02') 
+LOCATION 's3://your-bucket/AWSLogs/your-account-id/CloudTrail/region/year=2024/month=01/day=02/'
+PARTITION (year='2024', month='01', day='03') 
+LOCATION 's3://your-bucket/AWSLogs/your-account-id/CloudTrail/region/year=2024/month=01/day=03/';
