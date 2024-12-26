@@ -16,12 +16,11 @@ QUEUE_URL = "https://sqs.eu-west-2.amazonaws.com/390746273208/verification-code-
 def extract_number(text):
     pattern = r'; padding-top: 0;">(\d{4})</td>'
 
-    logger.info(f"data type of message to process: {type(text)}")
-    matches = re.findall(pattern, text["content"])
+    matches = re.findall(pattern, text)
 
     if matches:
         logger.info(f"Found numbers: {matches}")
-        return matches[0]
+        return matches
     else:
         logger.info("No numenrs found in content" )
         return []

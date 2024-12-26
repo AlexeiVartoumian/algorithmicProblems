@@ -1,0 +1,132 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SQS Queue and IAM roles for UberEats automation'
+
+Parameters:
+  ExtractorFunctionName:
+    Type: String
+    Default: uber-code-extractor
+    Description: Name of the extractor Lambda function
+  
+  BrowserFunctionName:
+    Type: String
+    Default: uber-browser-automation
+    Description: Name of the browser automation Lambda function
+
+Resources:
+  # SQS Queue
+  VerificationCodeQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: verification-code-queue
+      VisibilityTimeout: 300  # 5 minutes
+      MessageRetentionPeriod: 3600  # 1 hour
+      ReceiveMessageWaitTimeSeconds: 20  # Enable long polling
+
+  # Queue Policy
+  VerificationCodeQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: 
+        - !Ref VerificationCodeQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaSendReceive
+            Effect: Allow
+            Principal:
+              AWS: 
+                - !GetAtt ExtractorLambdaRole.Arn
+                - !GetAtt BrowserLambdaRole.Arn
+            Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt VerificationCodeQueue.Arn
+
+  # Extractor Lambda Role (for the function that reads from SNS and writes to SQS)
+  ExtractorLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ExtractorFunctionName}-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SQSSendPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt VerificationCodeQueue.Arn
+        - PolicyName: SNSSubscribePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Subscribe
+                  - sns:Receive
+                Resource: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*
+
+  # Browser Lambda Role (for the ECR container that reads from SQS)
+  BrowserLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${BrowserFunctionName}-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SQSReceivePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt VerificationCodeQueue.Arn
+        - PolicyName: ECRAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: '*'
+
+Outputs:
+  QueueURL:
+    Description: URL of the SQS Queue
+    Value: !Ref VerificationCodeQueue
+    
+  QueueARN:
+    Description: ARN of the SQS Queue
+    Value: !GetAtt VerificationCodeQueue.Arn
+    
+  ExtractorRoleARN:
+    Description: ARN of the Extractor Lambda Role
+    Value: !GetAtt ExtractorLambdaRole.Arn
+    
+  BrowserRoleARN:
+    Description: ARN of the Browser Lambda Role
+    Value: !GetAtt BrowserLambdaRole.Arn

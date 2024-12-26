@@ -1,0 +1,87 @@
+aws cloudformation deploy \
+  --template-file template.yaml \
+  --stack-name uber-automation-stack \
+  --capabilities CAPABILITY_NAMED_IAM
+
+# Then get the SQS URL
+aws cloudformation describe-stacks \
+  --stack-name uber-automation-stack \
+  --query 'Stacks[0].Outputs[?OutputKey==`QueueURL`].OutputValue' \
+  --output text
+
+docker build -t uber-automation .
+
+# 2. Tag with your existing repository but new version
+# If you want to keep the old one as backup, use a version number
+docker tag uber-automation:latest YOUR_ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/uber-automation:v2
+
+# Or just update latest
+docker tag uber-automation:latest 390746273208.dkr.ecr.REGION.amazonaws.com/uber-automation:latest
+docker tag uber-automation:latest 390746273208.dkr.ecr.eu-west-2.amazonaws.com/uber-automation:latest
+
+
+# 3. Push the new version
+aws ecr get-login-password --region REGION | docker login --username AWS --password-stdin 390746273208.dkr.ecr.eu-west-2.amazonaws.com
+docker push 390746273208.dkr.ecr.eu-est-2.amazonaws.com/uber-automation:latest  # or :v2 if versioning
+
+
+docker build --platform=linux/amd64 --no-cache -t uber-automation .
+
+# Tag with specific architecture
+docker tag uber-automation:latest 390746273208.dkr.ecr.eu-west-2.amazonaws.com/selenium-lambda:latest
+
+# Push
+docker push 390746273208.dkr.ecr.eu-west-2.amazonaws.com/selenium-lambda:latest
+
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 390746273208.dkr.ecr.eu-west-2.amazonaws.com
+
+
+
+
+aws lambda create-function \
+  --function-name uber-code-extractor \
+  --package-type Image \
+  --code ImageUri=390746273208.dkr.ecr.eu-west-2.amazonaws.com/selenium-lambda:latest \
+  --role $(aws cloudformation describe-stacks \
+    --stack-name uber-automation-stack \
+    --query 'Stacks[0].Outputs[?OutputKey==`ExtractorRoleARN`].OutputValue' \
+    --output text) \
+  --image-config '{"EntryPoint": ["extractor.lambda_handler"]}'
+
+# Create browser Lambda from same ECR
+aws lambda create-function \
+  --function-name uber-browser-automation \
+  --package-type Image \
+  --code ImageUri=390746273208.dkr.ecr.eu-west-2.amazonaws.com/selenium-lambda:latest \
+  --role $(aws cloudformation describe-stacks \
+    --stack-name uber-automation-stack \
+    --query 'Stacks[0].Outputs[?OutputKey==`BrowserRoleARN`].OutputValue' \
+    --output text) \
+  --image-config '{"EntryPoint": ["main.lambda_handler"]}'
+
+
+  aws lambda add-permission \
+  --function-name uber-code-extractor \
+  --statement-id SNSInvoke \
+  --action lambda:InvokeFunction \
+  --principal sns.amazonaws.com \
+  --source-arn arn:aws:sns:eu-west-2:390746273208:email-forwarding-topic
+
+
+  aws sns subscribe \
+  --topic-arn arn:aws:sns:eu-west-2:390746273208:email-forwarding-topic \
+  --protocol lambda \
+  --notification-endpoint $(aws lambda get-function \
+    --function-name uber-code-extractor \
+    --query 'Configuration.FunctionArn' \
+    --output text)
+
+
+aws lambda update-function-configuration \
+  --function-name uber-browser-automation \
+  --image-config '{"Command": ["main.lambda_handler"]}'
+
+
+  aws lambda update-function-configuration \
+  --function-name uber-code-extractor \
+  --image-config '{"Command": ["extractor.lambda_handler"]}'
