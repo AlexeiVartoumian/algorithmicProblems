@@ -1,0 +1,59 @@
+First, initialize your Go module:
+go mod init custom-appregistry-provider
+
+Then add the required dependencies:
+
+bashCopygo get github.com/aws/aws-sdk-go-v2/service/servicecatalogappregistry
+go get github.com/hashicorp/terraform-plugin-sdk/v2
+
+Your go.mod file should look something like this:
+
+goCopymodule custom-appregistry-provider
+
+go 1.20
+
+require (
+    github.com/aws/aws-sdk-go-v2 v1.21.0
+    github.com/aws/aws-sdk-go-v2/service/servicecatalogappregistry v1.16.5
+    github.com/hashicorp/terraform-plugin-sdk/v2 v2.29.0
+)
+
+You'll also need AWS config:
+
+bashCopygo get github.com/aws/aws-sdk-go-v2/config
+Here's the complete provider code with all necessary imports:
+goCopypackage main
+
+import (
+    "context"
+    "fmt"
+    "github.com/aws/aws-sdk-go-v2/config"
+    "github.com/aws/aws-sdk-go-v2/service/servicecatalogappregistry"
+    "github.com/aws/aws-sdk-go-v2/service/servicecatalogappregistry/types"
+    "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+    "github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+)
+
+func main() {
+    plugin.Serve(&plugin.ServeOpts{
+        ProviderFunc: Provider,
+    })
+}
+
+func Provider() *schema.Provider {
+    return &schema.Provider{
+        ResourcesMap: map[string]*schema.Resource{
+            "appregistry_cfn_association": resourceAppRegistryCfnAssociation(),
+        },
+        ConfigureContextFunc: providerConfigure,
+    }
+}
+
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+    cfg, err := config.LoadDefaultConfig(ctx)
+    if err != nil {
+        return nil, diag.FromErr(err)
+    }
+
+    return servicecatalogappregistry.NewFromConfig(cfg), nil
+}
