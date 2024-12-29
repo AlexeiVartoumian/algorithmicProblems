@@ -1,0 +1,13 @@
+
+aws servicecatalog-appregistry associate-resource \
+>   --application "arn:aws:servicecatalog:eu-west-2:390746273208:/applications/07nvgtkrwb88n5h2k81iulc1l3" \
+>   --resource-type "CFN_STACK" \
+>   --resource "instance" \
+>   --option "APPLY_APPLICATION_TAG"
+{
+    "applicationArn": "arn:aws:servicecatalog:eu-west-2:390746273208:/applications/07nvgtkrwb88n5h2k81iulc1l3",
+    "resourceArn": "arn:aws:cloudformation:eu-west-2:390746273208:stack/instance/2cfec710-c62c-11ef-9c53-024ae41e1fd7",
+    "options": [
+        "APPLY_APPLICATION_TAG"
+    ]
+}
