@@ -195,23 +195,28 @@ func isAdminUser(event string) bool {
 }
 
 func main() {
-
 	var (
 		showDetail       bool
 		listAll          bool
 		showAssumedRoles bool
 	)
 
-	//detailFlag := flag.Bool("detail", false, "show detailed event information")
 	flag.BoolVar(&showDetail, "detail", false, "show detailed event information")
-	flag.BoolVar(&listAll, "list-all", false, "List all Iam user found in the logs")
+	flag.BoolVar(&listAll, "list-all", false, "List all IAM users found in the logs")
 	flag.BoolVar(&showAssumedRoles, "assumed-roles", false, "show Assumed role events")
 
+	// Add this debug print
+	// fmt.Printf("Flags registered: detail=%v, list-all=%v, assumed-roles=%v\n",
+	// 	flag.Lookup("detail") != nil,
+	// 	flag.Lookup("list-all") != nil,
+	// 	flag.Lookup("assumed-roles") != nil)
+
+	// Update usage to be consistent with flag definitions
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage:\n")
-		fmt.Fprintf(os.Stderr, " %s [--detail] <cloudtrail-file> <username>\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, " %s --list-all <cloud-trail-file>\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, " %s --assumed-roles <cloud-trail-file>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, " %s [-detail] <cloudtrail-file> <username>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, " %s -list-all <cloud-trail-file>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, " %s -assumed-roles <cloud-file>\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 
@@ -220,7 +225,7 @@ func main() {
 	args := flag.Args()
 	if showAssumedRoles {
 		if len(args) != 1 {
-			fmt.Println("Error: please provide only the CloudTrail file path when using --list-all")
+			fmt.Println("Error: please provide only the CloudTrail file path when using --assumed-roles")
 			flag.Usage()
 			os.Exit(1)
 		}
@@ -231,7 +236,7 @@ func main() {
 		}
 
 		fmt.Printf("Found: %d unique SSO users: \n", len(foundUsers))
-		fmt.Printf(strings.Repeat("-", 80))
+		fmt.Printf("%s", strings.Repeat("-", 80))
 
 		for _, user := range foundUsers {
 			fmt.Printf("USer: %s\n", user.UserName)
@@ -254,7 +259,7 @@ func main() {
 			}
 			fmt.Println(strings.Repeat("-", 80))
 		}
-
+		return
 	}
 
 	if listAll {
@@ -288,6 +293,7 @@ func main() {
 			fmt.Println(strings.Repeat("-", 80))
 			return
 		}
+
 	}
 	if len(args) != 2 {
 

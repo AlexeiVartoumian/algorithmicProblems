@@ -1,0 +1,275 @@
+// First, let's modify the MatchedEvent struct to include the filename
+type MatchedEvent struct {
+    Timestamp       string
+    Action          string
+    User            string
+    PrincipalId     string
+    SourceIPAddress string
+    Arn             string
+    SessionIssuer   SessionIssuer
+    InvokedBy       string
+    SourceFile      string    // Added this field
+}
+
+// S3 processing types
+type S3Processor struct {
+    client      *s3.Client
+    bucket      string
+    concurrency int
+    wg          sync.WaitGroup
+}
+
+type ProcessResult struct {
+    FileName string
+    Users    FoundUsers
+    Error    error
+}
+
+func NewS3Processor(bucket string, concurrency int) (*S3Processor, error) {
+    cfg, err := config.LoadDefaultConfig(context.Background())
+    if err != nil {
+        return nil, fmt.Errorf("unable to load SDK config: %v", err)
+    }
+
+    return &S3Processor{
+        client:      s3.NewFromConfig(cfg),
+        bucket:      bucket,
+        concurrency: concurrency,
+    }, nil
+}
+
+func (p *S3Processor) ProcessDailyLogs(prefix string, assumedRoles bool) (FoundUsers, error) {
+    ctx := context.Background()
+    
+    // List all objects for the given prefix
+    input := &s3.ListObjectsV2Input{
+        Bucket: &p.bucket,
+        Prefix: &prefix,
+    }
+
+    objects, err := p.client.ListObjectsV2(ctx, input)
+    if err != nil {
+        return nil, fmt.Errorf("failed to list objects: %v", err)
+    }
+
+    // Create channels for jobs and results
+    jobs := make(chan *s3.Object, len(objects.Contents))
+    results := make(chan ProcessResult, len(objects.Contents))
+
+    // Start worker pool
+    for i := 0; i < p.concurrency; i++ {
+        p.wg.Add(1)
+        go p.worker(ctx, jobs, results, assumedRoles)
+    }
+
+    // Send work to workers
+    for _, obj := range objects.Contents {
+        jobs <- obj
+    }
+    close(jobs)
+
+    // Wait for all workers in separate goroutine
+    go func() {
+        p.wg.Wait()
+        close(results)
+    }()
+
+    // Collect and merge results
+    allUsers := make(FoundUsers)
+    for result := range results {
+        if result.Error != nil {
+            fmt.Printf("Error processing %s: %v\n", result.FileName, result.Error)
+            continue
+        }
+
+        // Merge users and their events
+        for userName, foundUser := range result.Users {
+            if existing, exists := allUsers[userName]; exists {
+                existing.TotalEvents += foundUser.TotalEvents
+                existing.Events = append(existing.Events, foundUser.Events...)
+            } else {
+                allUsers[userName] = foundUser
+            }
+        }
+    }
+
+    return allUsers, nil
+}
+
+func (p *S3Processor) worker(ctx context.Context, jobs <-chan *s3.Object, results chan<- ProcessResult, assumedRoles bool) {
+    defer p.wg.Done()
+
+    for obj := range jobs {
+        // Download and process each object
+        result := ProcessResult{FileName: *obj.Key}
+
+        // Download the object
+        resp, err := p.client.GetObject(ctx, &s3.GetObjectInput{
+            Bucket: &p.bucket,
+            Key:    obj.Key,
+        })
+        if err != nil {
+            result.Error = fmt.Errorf("failed to download: %v", err)
+            results <- result
+            continue
+        }
+        defer resp.Body.Close()
+
+        // Create gzip reader
+        gzReader, err := gzip.NewReader(resp.Body)
+        if err != nil {
+            result.Error = fmt.Errorf("failed to create gzip reader: %v", err)
+            results <- result
+            continue
+        }
+        defer gzReader.Close()
+
+        // Read and parse JSON
+        var logs CloudTrailLog
+        if err := json.NewDecoder(gzReader).Decode(&logs); err != nil {
+            result.Error = fmt.Errorf("failed to parse JSON: %v", err)
+            results <- result
+            continue
+        }
+
+        // Process events based on mode
+        if assumedRoles {
+            result.Users = processAssumedRoleEvents(logs.Records, *obj.Key)
+        } else {
+            result.Users = processIAMUserEvents(logs.Records, *obj.Key)
+        }
+
+        results <- result
+    }
+}
+
+// Helper function to process IAM user events
+func processIAMUserEvents(events []Event, filename string) FoundUsers {
+    users := make(FoundUsers)
+    
+    for _, event := range events {
+        if event.UserIdentity.Type == "IAMUser" && event.UserIdentity.UserName != "" {
+            t, err := time.Parse(time.RFC3339, event.EventTime)
+            if err != nil {
+                continue
+            }
+
+            matchedEvent := MatchedEvent{
+                Timestamp:       t.Format("2006-01-02 15:04:05"),
+                Action:         event.EventName,
+                User:           event.UserIdentity.UserName,
+                SourceIPAddress: event.SourceIPAddress,
+                SourceFile:     filename,
+            }
+
+            userName := event.UserIdentity.UserName
+            if foundUser, exists := users[userName]; exists {
+                foundUser.Events = append(foundUser.Events, matchedEvent)
+                foundUser.TotalEvents++
+            } else {
+                users[userName] = &FoundUser{
+                    UserName:    userName,
+                    TotalEvents: 1,
+                    Events:      []MatchedEvent{matchedEvent},
+                }
+            }
+        }
+    }
+    return users
+}
+
+// Helper function to process assumed role events
+func processAssumedRoleEvents(events []Event, filename string) FoundUsers {
+    users := make(FoundUsers)
+    
+    for _, event := range events {
+        if isAdminUser(event.UserIdentity.PrincipalId) {
+            t, err := time.Parse(time.RFC3339, event.EventTime)
+            if err != nil {
+                continue
+            }
+
+            matchedEvent := MatchedEvent{
+                Timestamp:       t.Format("2006-01-02 15:04:05"),
+                Action:          event.EventName,
+                PrincipalId:     event.UserIdentity.PrincipalId,
+                Arn:             event.UserIdentity.Arn,
+                SessionIssuer:   event.UserIdentity.SessionContext.SessionIssuer,
+                SourceIPAddress: event.SourceIPAddress,
+                InvokedBy:       event.UserIdentity.InvokedBy,
+                SourceFile:      filename,
+            }
+
+            usr := strings.Split(event.UserIdentity.PrincipalId, ":")[1]
+            if foundUser, exists := users[usr]; exists {
+                foundUser.Events = append(foundUser.Events, matchedEvent)
+                foundUser.TotalEvents++
+            } else {
+                users[usr] = &FoundUser{
+                    UserName:    usr,
+                    TotalEvents: 1,
+                    Events:      []MatchedEvent{matchedEvent},
+                }
+            }
+        }
+    }
+    return users
+}
+
+// Add these to your main flags
+func main() {
+    var (
+        showDetail       bool
+        listAll         bool
+        showAssumedRoles bool
+        s3Bucket        string
+        s3Prefix        string
+        concurrency     int
+    )
+
+    flag.BoolVar(&showDetail, "detail", false, "show detailed event information")
+    flag.BoolVar(&listAll, "list-all", false, "List all IAM users found in the logs")
+    flag.BoolVar(&showAssumedRoles, "assumed-roles", false, "show Assumed role events")
+    flag.StringVar(&s3Bucket, "s3-bucket", "", "S3 bucket containing CloudTrail logs")
+    flag.StringVar(&s3Prefix, "s3-prefix", "", "S3 prefix for CloudTrail logs")
+    flag.IntVar(&concurrency, "concurrency", 5, "Number of concurrent workers for S3 processing")
+
+    // ... rest of your main function
+    
+    // Add S3 processing logic
+    if s3Bucket != "" && s3Prefix != "" {
+        processor, err := NewS3Processor(s3Bucket, concurrency)
+        if err != nil {
+            fmt.Printf("Error creating S3 processor: %v\n", err)
+            os.Exit(1)
+        }
+
+        users, err := processor.ProcessDailyLogs(s3Prefix, showAssumedRoles)
+        if err != nil {
+            fmt.Printf("Error processing S3 logs: %v\n", err)
+            os.Exit(1)
+        }
+
+        // Use existing output format
+        fmt.Printf("\nFound %d unique users:\n", len(users))
+        fmt.Println(strings.Repeat("-", 80))
+
+        for _, user := range users {
+            fmt.Printf("User: %s\n", user.UserName)
+            fmt.Printf("Total events: %d\n", user.TotalEvents)
+
+            if showDetail {
+                fmt.Println("Events:")
+                for _, event := range user.Events {
+                    fmt.Printf("\tTime: %s\n", event.Timestamp)
+                    fmt.Printf("\tAction: %s\n", event.Action)
+                    fmt.Printf("\tSource IP: %s\n", event.SourceIPAddress)
+                    fmt.Printf("\tSource File: %s\n", event.SourceFile)
+                    fmt.Println()
+                }
+            }
+            fmt.Println(strings.Repeat("-", 80))
+        }
+    }
+    // ... rest of your existing main function
+}
