@@ -1,0 +1,4 @@
+
+
+$ ./iam-finder -s3-bucket bucket-name    -s3-prefix "path/to/bucketday/2025/02/01"     -profile logging     -assumed-roles     -detail
+$ ./iam-finder -s3-bucket buclketname     -s3-prefix "path/to/bucketday/2025/02/01"     -profile logging     -detail
