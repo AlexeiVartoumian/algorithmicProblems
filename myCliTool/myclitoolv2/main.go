@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -110,21 +111,76 @@ type ProcessResult struct {
 // 	}, nil
 // }
 
+// func NewS3Processor(bucket string, concurrency int, roleArn string, profile string) (*S3Processor, error) {
+// 	cfg, err := config.LoadDefaultConfig(context.Background(),
+// 		config.WithSharedConfigProfile(profile),
+// 		config.WithRegion("us-east-1"), // Start with us-east-1 as default
+// 	)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("unable to load SDK config: %v", err)
+// 	}
+
+// 	// Create S3 client with just UsePathStyle option
+// 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+// 		o.UsePathStyle = true
+// 	})
+
+// 	// Let's verify we can access the bucket first
+// 	_, err = client.HeadBucket(context.Background(), &s3.HeadBucketInput{
+// 		Bucket: aws.String(bucket),
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("unable to access bucket: %v", err)
+// 	}
+
+//		return &S3Processor{
+//			client:      client,
+//			bucket:      bucket,
+//			concurrency: concurrency,
+//		}, nil
+//	}
 func NewS3Processor(bucket string, concurrency int, roleArn string, profile string) (*S3Processor, error) {
+	// First create a config with us-east-1 to get bucket location
 	cfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithSharedConfigProfile(profile),
-		config.WithRegion("us-east-1"), // Start with us-east-1 as default
+		config.WithRegion("us-east-1"),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to load SDK config: %v", err)
 	}
 
-	// Create S3 client with just UsePathStyle option
+	// Create temporary client
+	tempClient := s3.NewFromConfig(cfg)
+
+	// Get bucket location first to
+	loc, err := tempClient.GetBucketLocation(context.Background(), &s3.GetBucketLocationInput{
+		Bucket: aws.String(bucket),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to get bucket location: %v", err)
+	}
+
+	// Get the correct region
+	region := "us-east-1" // default if empty
+	if loc.LocationConstraint != "" {
+		region = string(loc.LocationConstraint)
+	}
+
+	// Create new config with correct region
+	cfg, err = config.LoadDefaultConfig(context.Background(),
+		config.WithSharedConfigProfile(profile),
+		config.WithRegion(region),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("unable to load SDK config with region: %v", err)
+	}
+
+	// Create final S3 client
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.UsePathStyle = true
 	})
 
-	// Let's verify we can access the bucket first
+	// checks if bucket exists and permission to access
 	_, err = client.HeadBucket(context.Background(), &s3.HeadBucketInput{
 		Bucket: aws.String(bucket),
 	})
@@ -138,7 +194,6 @@ func NewS3Processor(bucket string, concurrency int, roleArn string, profile stri
 		concurrency: concurrency,
 	}, nil
 }
-
 func (p *S3Processor) ProcessDailyLogs(prefix string, assumedRoles bool) (FoundUsers, error) {
 	ctx := context.Background()
 
@@ -202,7 +257,7 @@ func (p *S3Processor) worker(ctx context.Context, jobs <-chan types.Object, resu
 
 	//use funciotn literal to handle the defers
 	for obj := range jobs {
-		fmt.Printf("Processing file: %s\n", *obj.Key)
+		fmt.Printf("Starting to process file: %s\n", *obj.Key)
 		result := func(obj types.Object) ProcessResult {
 			result := ProcessResult{
 				FileName: *obj.Key, //dereference the pointer to string
@@ -239,13 +294,43 @@ func (p *S3Processor) worker(ctx context.Context, jobs <-chan types.Object, resu
 					Error:    fmt.Errorf("failed to parse JSON: %v", err),
 				}
 			}
+			//fmt.Printf("Found %d total events in file: %s\n", len(logs.Records), *obj.Key)
+
+			totalEvents := len(logs.Records)
+			var matchedUsers FoundUsers
 
 			//process events based on mode
 			if assumedRoles {
-				result.Users = processAssumedRoleEvents(logs.Records, *obj.Key)
+				//result.Users = processAssumedRoleEvents(logs.Records, *obj.Key)
+
+				matchedUsers = processAssumedRoleEvents(logs.Records, *obj.Key)
+				matchedEvents := 0
+				for _, user := range matchedUsers {
+					matchedEvents += user.TotalEvents
+				}
+				if matchedEvents > 0 {
+					//fmt.Printf("Found %d SSO events out of %d total events in file: %s\n", matchedEvents, totalEvents, *obj.Key)
+					fmt.Printf("\n%s\n", strings.Repeat("-", 80))
+					fmt.Printf("Found %d SSO events out of %d total events in file: %s\n", matchedEvents, totalEvents, *obj.Key)
+					fmt.Printf("%s\n", strings.Repeat("-", 80))
+				}
+
 			} else {
-				result.Users = processIAMUserEvents(logs.Records, *obj.Key)
+				//result.Users = processIAMUserEvents(logs.Records, *obj.Key)
+				matchedUsers = processIAMUserEvents(logs.Records, *obj.Key)
+				matchedEvents := 0
+
+				for _, user := range matchedUsers {
+					matchedEvents += user.TotalEvents
+				}
+				if matchedEvents > 0 {
+					fmt.Printf("\n%s\n", strings.Repeat("-", 80))
+					fmt.Printf("Found %d SSO events out of %d total events in file: %s\n", matchedEvents, totalEvents, *obj.Key)
+					fmt.Printf("%s\n", strings.Repeat("-", 80))
+
+				}
 			}
+			result.Users = matchedUsers
 			return result
 		}(obj)
 		results <- result
@@ -454,7 +539,8 @@ func isAdminUser(event string) bool {
 	}
 	id := event
 	if idx := strings.Index(id, ":"); idx >= 0 {
-		return strings.HasPrefix(id[idx+1:], "adm")
+		//return strings.HasPrefix(id[idx+1:], "adm")
+		return strings.HasPrefix(id[idx+1:], "ava")
 	}
 	return false
 }
