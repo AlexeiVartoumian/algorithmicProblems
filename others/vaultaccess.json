@@ -1,0 +1,18 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "backup:CopyIntoBackupVault",
+            "Resource": "*",
+            "Principal": "*",
+            "Condition": {
+                "ForAnyValue:StringLike": {
+                    "aws:PrincipalOrgPaths": [
+                        "o-m9jr8f8hqe/r-aklj/ou-aklj-pzbb47zd/*"
+                    ]
+                }
+            }
+        }
+    ]
+}
