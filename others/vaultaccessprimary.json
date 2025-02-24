@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::390746273208:root"
+            },
+            "Action": "backup:CopyIntoBackupVault",
+            "Resource": "*"
+        }
+    ]
+}
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Allow 390746273208 to copy into Production_Backup_Vault",
+        "Effect": "Allow",
+        "Action": "backup:CopyIntoBackupVault",
+        "Resource": "*",
+        "Principal": {
+          "AWS": "arn:aws:iam::390746273208:root"
+        }
+      }
+    ]
+  }
