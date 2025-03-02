@@ -16,6 +16,14 @@
 {
 	"Version": "2012-10-17",
 	"Statement": [
+        {
+            "Sid": "CopyVaultCopyPermissions",
+            "Effect" : "Allow",
+            "Action" : [
+                "backup:CopyFromBackupVault"
+            ],
+            "Resource": "*"
+        }
 		{
 			"Effect": "Allow",
 			"Action": [
@@ -89,6 +97,16 @@
 				"backup:UntagResource"
 			],
 			"Resource": "*"
+		},
+        {
+			"Effect": "Allow",
+			"Action": [
+				"events:DescribeRule",
+				"events:EnableRule",
+				"events:ListRules",
+				"events:UntagResourc"
+			],
+			"Resource": "*"
 		}
 	]
 }
@@ -99,6 +117,14 @@
 {
     "Version": "2012-10-17",
     "Statement": [
+        {
+            "Sid": "CopyVaultCopyPermissions",
+            "Effect" : "Allow",
+            "Action" : [
+                "backup:CopyFromBackupVault"
+            ],
+            "Resource": "*"
+        },
         {
             "Effect": "Allow",
             "Action": [
