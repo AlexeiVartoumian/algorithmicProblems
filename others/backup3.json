@@ -1,7 +1,7 @@
 {
     "plans": {
       "RDS_Backup_Plan": {
-        "plan_regions": {
+        "regions": {
           "@@assign": [
             "eu-west-1",
             "eu-west-2"
