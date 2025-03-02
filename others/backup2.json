@@ -71,7 +71,7 @@
               "iam_role_arn": {
                 "@@assign": "arn:aws:iam::$account:role/AWSBackupProductionRole"
               },
-              "resources": {
+              "resource_types": {
                 "@@assign": [
                   "arn:aws:rds:*:*:*",
                   "arn:aws:s3:*:*:*"
