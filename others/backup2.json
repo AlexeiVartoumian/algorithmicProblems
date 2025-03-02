@@ -73,8 +73,8 @@
               },
               "resource_types": {
                 "@@assign": [
-                  "arn:aws:rds:*:*:*",
-                  "arn:aws:s3:*:*:*"
+                  "arn:aws:rds:*:*:db:*",
+                  "arn:aws:s3:::*"
                 ]
               },
               "conditions": {
