@@ -1,8 +1,19 @@
 {
     "plans": {
       "RDS_Backup_Plan": {
+        "plan_regions": {
+          "@@assign": [
+            "eu-west-1",
+            "eu-west-2"
+          ]
+        },
         "rules": {
-          "Daily_Backup_Rule": {
+          "eu-west-1-rule": {
+            "rule_regions": {
+              "@@assign": [
+                "eu-west-1"
+              ]
+            },
             "schedule_expression": {
               "@@assign": "cron(51 * ? * * *)"
             },
@@ -58,63 +69,12 @@
               }
             }
           },
-          "eu-west-1-backup-rule": {
-            "schedule_expression": {
-              "@@assign": "cron(51 * ? * * *)"
+          "eu-west-2-rule": {
+            "rule_regions": {
+              "@@assign": [
+                "eu-west-2"
+              ]
             },
-            "start_backup_window_minutes": {
-              "@@assign": "60"
-            },
-            "complete_backup_window_minutes": {
-              "@@assign": "360"
-            },
-            "enable_continuous_backup": {
-              "@@assign": false
-            },
-            "target_backup_vault_name": {
-              "@@assign": "Production_Backup_Vault"
-            },
-            "recovery_point_tags": {
-              "Environment": {
-                "tag_key": {
-                  "@@assign": "Environment"
-                },
-                "tag_value": {
-                  "@@assign": "Production"
-                }
-              }
-            },
-            "lifecycle": {
-              "move_to_cold_storage_after_days": {
-                "@@assign": "90"
-              },
-              "delete_after_days": {
-                "@@assign": "365"
-              },
-              "opt_in_to_archive_for_supported_resources": {
-                "@@assign": false
-              }
-            },
-            "copy_actions": {
-              "arn:aws:backup:eu-west-2:390746273208:backup-vault:Secondary_Vault": {
-                "target_backup_vault_arn": {
-                  "@@assign": "arn:aws:backup:eu-west-2:390746273208:backup-vault:Secondary_Vault"
-                },
-                "lifecycle": {
-                  "move_to_cold_storage_after_days": {
-                    "@@assign": "90"
-                  },
-                  "delete_after_days": {
-                    "@@assign": "365"
-                  },
-                  "opt_in_to_archive_for_supported_resources": {
-                    "@@assign": false
-                  }
-                }
-              }
-            }
-          },
-          "eu-west-2-backup-rule": {
             "schedule_expression": {
               "@@assign": "cron(51 * ? * * *)"
             },
@@ -171,12 +131,6 @@
             }
           }
         },
-        "regions": {
-          "@@assign": [
-            "eu-west-1",
-            "eu-west-2"
-          ]
-        },
         "selections": {
           "resources": {
             "RDS_S3_Backup_Selection": {
@@ -211,18 +165,6 @@
             },
             "tag_value": {
               "@@assign": "Production"
-            }
-          }
-        },
-        "region_specific_rules": {
-          "eu-west-1": {
-            "rules": {
-              "@@assign": ["eu-west-1-backup-rule"]
-            }
-          },
-          "eu-west-2": {
-            "rules": {
-              "@@assign": ["eu-west-2-backup-rule"]
             }
           }
         }
