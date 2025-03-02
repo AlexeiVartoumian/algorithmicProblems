@@ -66,27 +66,27 @@
           ]
         },
         "selections": {
-          "programmatic": {
-            "Programmatic_Resource_Selection": {
-              "iam_role_arn": {
-                "@@assign": "arn:aws:iam::$account:role/AWSBackupProductionRole"
-              },
-              "BackupSelection": {
-                "Resources": [
-                  "arn:aws:rds:*:*:db:*",
-                  "arn:aws:s3:*:*:bucket/*"
-                ],
-                "Conditions": {
-                  "StringEquals": [
-                    {
-                      "ConditionKey": "aws:ResourceTag/backup",
-                      "ConditionValue": "y"
-                    }
+          "tags": {
+              "RDS_Backup_Selection": {
+                "iam_role_arn": {
+                  "@@assign": "arn:aws:iam::$account:role/AWSBackupProductionRole"
+                },
+                "tag_key": {
+                  "@@assign": "backup"
+                },
+                "tag_value": {
+                  "@@assign": [
+                    "y"
+                  ]
+                },
+                "resources": {
+                  "@@assign": [
+                    "arn:aws:rds:*:*:*",
+                    "arn:aws:s3:*:*:*"
                   ]
                 }
               }
             }
-          }
         },
         "backup_plan_tags": {
           "environment": {
