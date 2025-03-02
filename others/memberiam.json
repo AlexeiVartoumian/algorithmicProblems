@@ -226,3 +226,137 @@
         }
     ]
 }
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CopyVaultCopyPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "backup:CopyFromBackupVault"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "backup:StartBackupJob",
+                "backup:StopBackupJob",
+                "backup:CopyIntoBackupVault",
+                "backup:DescribeBackupJob",
+                "backup:CreateBackupVault",
+                "backup:DeleteBackupVault",
+                "backup:PutBackupVaultAccessPolicy",
+                "backup:DeleteBackupVaultAccessPolicy",
+                "backup:DescribeBackupVault",
+                "backup:DescribeRestoreJob",
+                "backup:DescribeProtectedResource",
+                "backup:DescribeRecoveryPoint",
+                "backup:ListRecoveryPointsByBackupVault",
+                "s3:PutBucketNotification"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "rds:CreateDBSnapshot",
+                "rds:DeleteDBSnapshot",
+                "rds:DescribeDBSnapshots",
+                "rds:DescribeDBInstances",
+                "rds:ListTagsForResource",
+                "rds:DescribeDBClusters",
+                "rds:CreateDBClusterSnapshot",
+                "rds:DescribeDBClusterSnapshots"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketTagging",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:PutObject",
+                "s3:GetBucketVersioning",
+                "s3:GetBucketNotification",
+                "s3:ListBucketVersions"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "SourceRegionKMSPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreateGrant",
+                "kms:GenerateDataKey",
+                "kms:Decrypt",
+                "kms:DescribeKey"
+            ],
+            "Resource": [
+                "arn:aws:kms:eu-west-1:*:key/*",
+                "arn:aws:kms:eu-west-2:*:key/*"
+            ]
+        },
+        {
+            "Sid": "DestinationRegionKMSPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreateGrant",
+                "kms:GenerateDataKey",
+                "kms:Encrypt",
+                "kms:DescribeKey"
+            ],
+            "Resource": [
+                "arn:aws:kms:eu-west-1:390746273208:key/*",
+                "arn:aws:kms:eu-west-2:390746273208:key/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "backup:CopyIntoBackupVault",
+            "Resource": [
+                "arn:aws:backup:eu-west-1:390746273208:backup-vault:Secondary_Vault",
+                "arn:aws:backup:eu-west-2:390746273208:backup-vault:Secondary_Vault"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "tag:GetResources",
+                "backup:ListTags",
+                "backup:TagResource",
+                "backup:UntagResource"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:DescribeRule",
+                "events:EnableRule",
+                "events:ListRules",
+                "events:ListTargetsByRule",
+                "events:PutRule",
+                "events:PutTargets",
+                "events:DeleteRule",
+                "events:RemoveTargets",
+                "events:DisableRule"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:GetMetricData",
+                "cloudwatch:PutMetricData",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
