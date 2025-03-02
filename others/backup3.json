@@ -1,19 +1,13 @@
 {
     "plans": {
-      "RDS_Backup_Plan": {
+      "RDS_Backup_Plan_EU_West_1": {
         "regions": {
           "@@assign": [
-            "eu-west-1",
-            "eu-west-2"
+            "eu-west-1"
           ]
         },
         "rules": {
-          "eu-west-1-rule": {
-            "rule_regions": {
-              "@@assign": [
-                "eu-west-1"
-              ]
-            },
+          "Daily_Backup_Rule": {
             "schedule_expression": {
               "@@assign": "cron(51 * ? * * *)"
             },
@@ -68,13 +62,54 @@
                 }
               }
             }
-          },
-          "eu-west-2-rule": {
-            "rule_regions": {
-              "@@assign": [
-                "eu-west-2"
-              ]
+          }
+        },
+        "selections": {
+          "resources": {
+            "RDS_S3_Backup_Selection": {
+              "iam_role_arn": {
+                "@@assign": "arn:aws:iam::$account:role/AWSBackupProductionRole"
+              },
+              "resource_types": {
+                "@@assign": [
+                  "arn:aws:rds:*:*:db:*",
+                  "arn:aws:s3:::*"
+                ]
+              },
+              "conditions": {
+                "string_equals": {
+                  "backup_condition": {
+                    "condition_key": {
+                      "@@assign": "aws:ResourceTag/backup"
+                    },
+                    "condition_value": {
+                      "@@assign": "y"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "backup_plan_tags": {
+          "environment": {
+            "tag_key": {
+              "@@assign": "Environment"
             },
+            "tag_value": {
+              "@@assign": "Production"
+            }
+          }
+        }
+      },
+      "RDS_Backup_Plan_EU_West_2": {
+        "regions": {
+          "@@assign": [
+            "eu-west-2"
+          ]
+        },
+        "rules": {
+          "Daily_Backup_Rule": {
             "schedule_expression": {
               "@@assign": "cron(51 * ? * * *)"
             },
