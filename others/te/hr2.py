@@ -83,6 +83,7 @@ def modify_default_security_groups(region=None, apply_changes=False):
                                     'from_port': rule.get('FromPort', 'All'),
                                     'to_port': rule.get('ToPort', 'All'),
                                     'destinations': []
+                                    
                                 }
                                 
                                 # IP ranges
