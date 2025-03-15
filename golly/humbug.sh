@@ -15,10 +15,17 @@ database:
 
 tfe:
   address: https://app.terraform.io 
-  token: YOUR_TFE_TOKEN              
-  organization: YOUR_ORGANIZATION    
+  token:              
+  organization: 
 
 web:
   port: 8080
   base-url: /
 EOF
+
+docker run --name terraboard -p 8080:8080 \
+  -v $(pwd)/config.yml:/config.yml \
+  -e CONFIG_FILE="/config.yml" \
+  --net terranet \
+  -d \
+  camptocamp/terraboard:latest
