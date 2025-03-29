@@ -1,0 +1,9 @@
+aws codepipeline get-pipeline --name YOUR-PIPELINE-NAME > pipeline.json
+
+
+
+sed -i 's/codepipeline-eu-west-1-609084153042/codepipeline-eu-west-1-364654517537/g' pipeline.json
+
+
+
+aws codepipeline update-pipeline --cli-input-json file://pipeline.json
