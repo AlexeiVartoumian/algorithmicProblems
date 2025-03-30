@@ -1,9 +1,124 @@
-aws codepipeline get-pipeline --name YOUR-PIPELINE-NAME > pipeline.json
-
-
-
-sed -i 's/codepipeline-eu-west-1- /codepipeline-eu-west-1-/g' pipeline.json
-
-
+aws codepipeline get-pipeline --name PIPELINE-NAME > pipeline.json
 
 aws codepipeline update-pipeline --cli-input-json file://pipeline.json
+
+
+
+
+# Basic DNS lookup
+nslookup example.com
+dig example.com
+
+# Reverse DNS lookup
+nslookup 8.8.8.8
+dig -x 8.8.8.8
+
+# Check DNS servers
+cat /etc/resolv.conf
+Certificate Tests
+bashCopy# Check certificate for a domain
+openssl s_client -connect example.com:443 -showcerts
+
+# Verify certificate expiration
+echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/null | openssl x509 -noout -dates
+Traceroute/Hops
+bashCopy# Install if needed: sudo yum install traceroute -y (Amazon Linux)
+traceroute example.com
+
+# MTR combines ping and traceroute
+# Install if needed: sudo yum install mtr -y
+mtr example.com
+Firewall Tests
+bashCopy# Check if a specific port is open
+nc -zv example.com 443
+
+# Scan multiple ports
+nmap -p 80,443,8080 example.com
+
+# Check local firewall rules
+sudo iptables -L
+Ping Tests
+bashCopy# Basic ping
+ping -c 4 example.com
+
+# Ping with larger packet size
+ping -c 4 -s 1472 example.com
+Proxy Tests
+Check current proxy settings
+env | grep -i proxy
+
+# Test with curl specifying proxy
+curl -x http://your-proxy:port https://example.com
+
+# Verify if your traffic is going through the proxy
+curl -v https://api.ipify.org
+General Connection Tests
+Test TCP connection to specific port
+telnet example.com 443
+
+# Check listening ports on your instance
+netstat -tulpn
+
+# Check routing table
+route -n
+ip route show
+
+
+
+
+resource "aws_cloudwatch_log_group" "asg_logs" {
+ 
+  name = "/aws/ec2/asg-${var.region}"
+  retention_in_days = 30
+}
+
+
+data "aws_iam_role" "existing_role" {
+  name = "ec2-kms-access-role"  # Your existing role name
+}
+
+
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2-profile"
+  role = data.aws_iam_role.existing_role.name
+}
+
+
+#!/bin/bash
+# Install the CloudWatch Logs agent
+yum update -y
+yum install -y awslogs
+
+# Configure the CloudWatch Logs agent
+cat > /etc/awslogs/awslogs.conf << 'END'
+[general]
+state_file = /var/lib/awslogs/agent-state
+
+[/var/log/messages]
+file = /var/log/messages
+log_group_name = ${log_group_name}
+log_stream_name = {instance_id}/var/log/messages
+datetime_format = %b %d %H:%M:%S
+
+# Additional log configurations...
+END
+
+# Set the region for the CloudWatch Logs agent
+sed -i "s/region = us-east-1/region = ${region}/g" /etc/awslogs/awscli.conf
+
+
+aws autoscaling describe-scaling-activities \
+  --auto-scaling-group-name "asg-${region}" \
+  --region ${region}
+
+# Filtered for failed activities only
+aws autoscaling describe-scaling-activities \
+  --auto-scaling-group-name "asg-${region}" \
+  --region ${region} \
+  --query "Activities[?StatusCode=='Failed']"
+
+# More detailed output including status messages
+aws autoscaling describe-scaling-activities \
+  --auto-scaling-group-name "asg-${region}" \
+  --region ${region} \
+  --query "Activities[].{StartTime:StartTime,StatusCode:StatusCode,StatusMessage:StatusMessage,Description:Description}"
