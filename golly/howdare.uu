@@ -1,0 +1,77 @@
+Direct Internet Connectivity
+
+Internet Gateway (for VPCs)
+Elastic IP Addresses
+NAT Gateway (for outbound-only internet access)
+Egress-Only Internet Gateway (for IPv6)
+
+
+Load Balancers
+
+Application Load Balancer (ALB)
+Network Load Balancer (NLB)
+Classic Load Balancer (CLB)
+
+
+Content Delivery & Edge Services
+
+CloudFront (CDN)
+Global Accelerator
+AWS App Runner (public endpoints)
+
+
+API & Application Connectivity
+
+API Gateway (REST & HTTP APIs)
+AppSync (GraphQL APIs)
+Lambda Function URLs
+API Destinations (for EventBridge)
+
+
+Hybrid Connectivity
+
+Site-to-Site VPN
+Client VPN
+Direct Connect
+Direct Connect Gateway
+Transit Gateway
+VPC Peering (indirectly, through connected VPCs)
+
+
+Serverless & Container Endpoints
+
+Amazon ECS with public IP assignment
+EKS public endpoint
+Fargate with public IP assignment
+App Runner
+
+
+Service Interfaces
+
+AWS Transfer Family (public SFTP/FTPS/FTP endpoints)
+Amazon WorkSpaces Web
+AppStream 2.0 (for streaming applications)
+Amazon Cognito (user pools with hosted UI)
+
+
+Resource-Specific Public Access
+
+S3 public access (controlled via bucket policies)
+DynamoDB Accelerator (DAX) endpoints
+SNS HTTPS endpoints
+SQS API endpoints (with public policies)
+SES email receiving endpoints
+
+
+Development & Management Tools
+
+Cloud9 environments
+CodeBuild public endpoints
+Amplify hosting
+Elastic Beanstalk environments
+
+
+VPC Endpoint Services
+
+AWS PrivateLink (when configured to be accessible across accounts)
+Gateway Load Balancer endpoints
