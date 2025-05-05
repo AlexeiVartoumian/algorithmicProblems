@@ -124,58 +124,58 @@ func ScaleRecipe(quantities []float64, portions int) []float64 {
 
 
 
-// You can edit this code!
-// Click here and start typing.
-// package main
+You can edit this code!
+Click here and start typing.
+package main
 
-// import (
-// 	"fmt"
-// 	"slices"
-// )
+import (
+	"fmt"
+	"slices"
+)
 
-// func Quantities(layers []string) (int, float64) {
+func Quantities(layers []string) (int, float64) {
 
-// 	create := func(ingredient string) func(yield func(string) bool) {
-// 		return func(yield func(string) bool) {
-// 			for _, v := range layers {
-// 				if v == ingredient {
-// 					if !yield(v) {
-// 						return
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return len(slices.Collect(create("noodles"))) * 50, float64(len(slices.Collect(create("sauce")))) * 0.2
-// }
-// func ScaleRecipe(quantities []float64, portions int) []float64 {
+	create := func(ingredient string) func(yield func(string) bool) {
+		return func(yield func(string) bool) {
+			for _, v := range layers {
+				if v == ingredient {
+					if !yield(v) {
+						return
+					}
+				}
+			}
+		}
+	}
+	return len(slices.Collect(create("noodles"))) * 50, float64(len(slices.Collect(create("sauce")))) * 0.2
+}
+func ScaleRecipe(quantities []float64, portions int) []float64 {
 
-// 	seq := func(yield func(float64) bool) {
+	seq := func(yield func(float64) bool) {
 
-// 		for _, v := range quantities {
-// 			v = (v / 2.0) * float64(portions)
-// 			if !yield(v) {
-// 				return
-// 			}
-// 		}
-// 	}
+		for _, v := range quantities {
+			v = (v / 2.0) * float64(portions)
+			if !yield(v) {
+				return
+			}
+		}
+	}
 
-// 	return slices.Collect(seq)
-// }
+	return slices.Collect(seq)
+}
 
-// func AddSecretIngredient(friendsList []string, myList *[]string) {
-// 	(*myList)[len(*myList)-1] = friendsList[len(friendsList)-1]
-// }
+func AddSecretIngredient(friendsList []string, myList *[]string) {
+	(*myList)[len(*myList)-1] = friendsList[len(friendsList)-1]
+}
 
-// func main() {
-// 	fmt.Println("Hello, 世界")
-// 	fmt.Println(Quantities([]string{"sauce", "noodles", "sauce", "meat", "mozzarella", "noodles"}))
-// 	quantities := []float64{1.2, 3.6, 10.5}
-// 	scaledQuantities := ScaleRecipe(quantities, 4)
-// 	fmt.Println(scaledQuantities)
-// 	friendsList := []string{"noodles", "sauce", "mozzarella", "kampot pepper"}
-// 	myList := []string{"noodles", "meat", "sauce", "mozzarella", "?"}
+func main() {
+	fmt.Println("Hello, 世界")
+	fmt.Println(Quantities([]string{"sauce", "noodles", "sauce", "meat", "mozzarella", "noodles"}))
+	quantities := []float64{1.2, 3.6, 10.5}
+	scaledQuantities := ScaleRecipe(quantities, 4)
+	fmt.Println(scaledQuantities)
+	friendsList := []string{"noodles", "sauce", "mozzarella", "kampot pepper"}
+	myList := []string{"noodles", "meat", "sauce", "mozzarella", "?"}
 
-// 	AddSecretIngredient(friendsList, &myList)
-// 	fmt.Println(myList)
-// }
+	AddSecretIngredient(friendsList, &myList)
+	fmt.Println(myList)
+}
