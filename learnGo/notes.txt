@@ -1,0 +1,1098 @@
+Basics
+
+GO is  a statically typed , compiled language. 
+
+We begin with three features .
+Packages
+Functions
+Variables
+Packages
+Go is organized via packages. A collection of source code files.
+Each of these source code files must share the same package name.
+When a package is imported only entities (functions , types , variables constants) WHOSE NAME START WITH A CAPITAL LETTER CAN BE USED/ACCESSED.
+
+
+Variables
+Go is statically typed , meaning variables must have a defined type at compile time/
+
+Explicitly typed = var explicit int
+Implicit := 1 // implicitly types as an int
+
+Once declared a variable can be reassigned with the equals operator.
+Use short variable declaration when inside functions i.e
+name := ”alice”
+Use var to declare package level variables OUTSIDE OF FUNCTIONS
+
+ConstantS
+Like variables , only value cannot be changed
+Const Age = 21
+ 
+Functions 
+GO functions accept zero or more parameters . Parameters must be explicitly typed there is no type inference .
+
+
+Below is a Public function because of the capital letter
+
+func Hello(string name ) {
+	return “hello”
+}
+
+Below is a private function because of lower case letter
+
+func hi (string hello ) {
+	Return “hi” + name
+}++
+Chapter 2 Strings
+
+What are strings
+
+A string is an immutable ,  a sequence of bytes .
+Therse sequence of bytes may or may not represent characters.
+
+String literal
+Defined between double quotes
+
+const name = “Jane”
+
+STRINGS CAN BE CONCATENATED VIA THE + OPERATOR
+
+“Jane” + “ ” + “Austen” => “Jane Austen”
+
+\t to indent and \n for new line like in python
+
+Strings package contains many useful functions examples of which are below
+
+Import “Strings” 
+
+strings.ToLowerI(“MakEMeLowerCase”)
+=> “makemelowercase”
+
+strings.Repeat(“Go” , 3) 
+=> “GoGoGo”
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 3 NUmbers
+Go represents numeric types either as integer or floating point value
+
+There exists different types depending on the size of value you require , typically for the hardware that the app is running on 
+Eg 32 bit and 64 bit
+
+For now we will discuss
+Int : 0 , 255 ,2147483647
+
+If a integer is signed and is of 32 bits in size then it will range between -2147483647 And 2147483647 although this depend on system architecture.64 bit numbers are much larger in comparison
+value rate of: -9223372036854775808 through 9223372036854775807
+
+Float64 eg 0.0 , 31.4 contains the set of all 64 bit floating point numbers
+
+uint: 0,255 this is an unsigned integer that is the same size as int 0 through 4294967295 for 32 bits and 0 through 18446744073709551615 for 64 bits)
+
+Converting between types
+Done between function calls
+
+var x int = 42 // x has type int 
+f:= float64(x) // f has type float64
+var y float64 = 11.9 // y has type float64
+i := int(y) // i has type int (i)
+
+You cannot perform arithmetic operation on different types
+var x int = 42
+
+// this line produces an error
+value := float32(2.0) * x // invalid operation: mismatched types float32 and int
+
+value := float32(2.0) * float32(x) 
+
+
+Chapter 4 Slices
+
+ Slices in go are similar to lists or arrays . 
+THEY HOLD SEVERAL ELEMENTS OF THE SAME TYPE OR INTERFACE
+
+ If slices in go are based on arrays , where arrays have a fixed size then a slice is dynamically sized 
+
+Writted []T
+
+Var empty []int
+withData := []int{1,2,3,4,5}
+
+A slice can be get or set at a given zero based indeed using Square bracket notation
+withData[1] = 5
+x:= withData[1] // => x is now 5
+
+A new slice can be gotten from an existing slice by getting a range of elements
+newSLice := withData[2:4] // => []int{2,3}
+newSlice := withDAta[:2] // => []int{1,2}
+newSlice := withData [2:] // => []int{2,3,4}
+newSlice := withData[:] // => []int{1,2,3,4,5}
+
+Append can be used 
+A := []int{1,3}
+A = append(A, 4,2 )
+
+APPEND ALWAYS RETURNS A NEW SLICE  , WHEN APPENDING COMMON TO APPEND ELEMENTS TO AN EXISTING SLICE.
+
+nextSlice := []int{100,101,102}
+
+
+
+Append Can also merge two slices of the same data type
+Performance , because memory allocation for a slice is expensive
+If the final size will be known boost can be gained by 
+
+CHAPTER 5 STRING FORMATTING
+
+Go has built -in package fmt for manipulating input and output . 
+
+For example 
+SprintF which interpolated variables defined and returns that sTRING
+
+Import “fmt”
+food := “taco”
+fmt.Sprintf(“Bring me a %s” , food)
+
+See https://pkg.go.dev/fmt for full list of interpolated verbs
+
+CHAPTER 6 Packages
+In Go applications are organized via packages . A package is a collection of source files located in the same folder.
+
+Each of these source files must have the same package name and are conventionally given the same name as the folder in which they are located.
+
+When imported public functions attribute to the source files belonging in that package are first addressed by that package name.
+
+
+
+
+
+
+
+
+
+
+Chapter 7 Switch
+Go also supports switch statement. 
+They follow this syntax
+
+Expression switch (what you showed):
+go
+operatingSystem := "windows"
+switch operatingSystem {
+case "windows":
+    // do something
+case "linux":
+    // do something
+default:
+    // regardless execution
+}
+Type switch (what your original code needed):
+go
+switch {
+case balance < 0:
+    // do something
+case balance < 1000:
+    // do something
+default:
+    // do something
+}
+
+CHAPTER 8 STRUCTS 
+In go a struct has a sequence of names and elements called fields.
+Each field has a name and type.
+The name of a field must be unique in a struct and are comparable with classes in Object Oriented design
+
+Structs are created using type and struct keywords and each field is explicitly defined
+
+type Shape struct {
+	name string
+	size int 
+}
+
+Fields that start with lowercase letter are private but those that start with Upper case are publicly visible to other packages 
+
+
+
+Creating instances of a struct
+Once a struct has been defined a new instance of this can be defined
+s := Shape {
+	name: “Square”
+	size : 25
+} 
+
+TO READ OR MODIFY INSTANCE FIELD use the . notation: 
+s.name = “Circle”
+s.size = 35 
+
+
+Fields that don't have an initial value assigned, will have their zero value. For example:
+s := Shape{name: "Circle"}
+fmt.Printf("name: %s size: %d\n", s.name, s.size)
+// Output: name: Circle size: 0
+
+New functions
+This is a function that help us to create struct instances. 
+They can be called anything and are similar to constructors in that they can return a “NEW” instance of a struct
+
+func NewShape(name string) Shape { 
+	return Shape {
+	name: name,
+	Size: 100,
+}
+}
+Using New functions can have the following advantages:
+validation of the given values
+handling of default-values
+since New functions are often declared in the same package of the structs they initialize, they can initialize even private fields of the struct
+Non struct types aka type aliases Simply put this is a technique for aliasing built in primitive types for additional context
+For example consider 
+type Name string // note how below function takes the Name type 
+func sayHello (n Name) { fmt.printf(“hello %s \n” , n )}
+n:= Name(“fred) => sayHello(n)
+This also extends to maps and strings
+type Names []string
+func SayHello(n Names) {
+  for _, name := range n {
+    fmt.Printf("Hello %s\n", name)
+  }
+}
+n := Names([]string{"Fred", "Bill"})
+SayHello(n)
+/ Output:// Hello Fred // Hello Bill
+Chapter 9 for loops
+
+In go a for loop consists of for keyword a header and a code block that contains the body of the llop.
+
+The header consists of 3 components separated by ; init , condition , post
+
+for init; condition; post {
+}
+
+Init component only runs once before loop starts
+
+Condition must be an expression that evaluates to booleans to control when the loop is to stop
+
+The post component is what runs at each end of iteration.
+
+example 
+
+for i := 1; i< 10 ;i ++{ 
+fmt.Println(i)
+}
+
+This loop will print numbers 1 to 9.
+
+
+
+
+
+Chapter 10 randomness 
+
+Package math/rand supports generation of pseudo-random numbers.
+
+import “math/rand”
+
+n:= rand.Intn(100)  // n will be a random int 0 <= n < 100
+
+Function rand.Float64 returns a random floating point number between 0.0 and 1.0
+
+f := rand.Float64() // f is a random float64, 0.0 <= f < 1.0
+
+Random can be used to shuffle slices and other data structures
+
+Import “math/rand”
+x := []string{“a”,”b”,”c”,”d”,”e”}
+
+rand.Shuffle( len(x) , func(i, j  int )  {
+	x[ i ] , x[ j ] = x[ j ] , x[ i ]
+})
+
+SEEDS
+Since the number of sequences generated are not random given a “seed” value , the results are deterministic.
+Older Go versions the seed was 1 by default . this meant manually seeding random numbers for example with the current time
+
+rand.Seed(time.Now().UnixNano())
+
+
+
+
+
+
+
+Chapter 10 functions
+
+Functions are reusable units of code . consists of following components
+
+func keyword , 
+A comma separated list of zero or more parameters in round brackets
+
+FUNCTION PARAMETERS
+All parameters must be explicitly typed , there is no type inference for parameters.  
+There are no default values for parameters so all functions parameters are required 
+
+import “fmt”
+//no parameters
+func PrintHello() {
+	fmt.Println(“Hello”)
+}
+//one parameter
+func PrintGreetingName(name string) {
+	fmt.Println(“Hello” + name )
+} 
+
+PARAMETERS OF THE SAME TYPE CAN BE DECLARED TOGETHER 
+
+Import “fmt”
+
+func sameParameters(greeting , name string)  {
+	fmt.Println(greeting  + “ ” + name )
+}
+
+
+
+
+
+
+PARAMETERS VS ARGUMENTS
+
+Function parameters are the names defined in the functions signature such as greeting and name above. 
+
+Function arguments are the actual concrete values so “Hello” and “World”  to pass in when invoking the function. 
+
+PrintGreetingName(“Hello” , “Katrina”)
+
+Return values
+
+Function parameters are followed by zero or more return values which must be explicitly typed . Multiple return values are wrapped in parenthesis
+
+You already know what a basic function looks like so please refer to eg below
+
+import “fmt”
+// param declaration of same type cane be declared together
+Func Hello(greeting , name string ) string {
+	Return greeting + name
+}
+//generic call
+Hello(“hello” , “Dave”)
+// declare and assigned and called like so
+Greeting := Hello(“hello” ,“Dave”)
+
+//Multiple parameters , multiple return values
+
+func SumAndMultiply(a , b int ) , (int , int) {
+	return a+b , a*b 
+}
+
+//called like this
+aplusb, atimesb := SumAndMultiply(a, b)
+
+NAKED RETURN
+If the return values found at the function signature are explicitly named as opposed to just stating the return type then the option to simply have a return with no values can be done where it will return the names values .
+Below is an example
+
+//naked return of sum and mult
+func SumAndMultiplyThenMinus (a,b,c int ) (sum , mult int) {
+	sum ,mult = a+b, a*b
+	sum -= c
+	mult -=c
+	return
+}
+
+PASS BY VALUE VS PASS BY REFERENCE
+
+Consider the function below. 
+
+val :=2
+
+func MultiplyByTwo(v int)  int {
+	v = v*2
+	Return v
+}
+
+newVal := MultiplyByTwo(val)
+
+When we pass the variable val to the function MultiplyByTwo 
+WE PASSED A COPY OF VAL. 
+ Because of this newVal has the updated value 4
+BUT THE ORIGINAL VARIABL VAL IS STILL 2.
+Go essentially makes a copy of the original value so that only this copy {v inside the function call } is modified.
+
+Strictly speaking all values are passed by value in Go , where a copy is mode of the value and/or data is provided to the function.
+However if you dont want to make a copy of the data but still want to change the data in the function then use pointers as arguments.
+THIS IS PASS BY REFERENCE. 
+
+POINTERS
+We use a pointer to achieve passing by reference. When passing in a pointer , that is a pointer where the data is stored in memory, we could modify the underlying data passed into the function as opposed to operating on a copy of the data.
+
+For now its sufficient to know that pointer types can be recognized as the * in front of the type in the function signature
+
+func HandlePointers(x , y *int)  int{
+	//some logic to handle integer values that are passed by reference.
+	return (*x)  * (*y)
+}
+
+IMPORTANT! SLICES AND MAPS ARE IMPLICITLY POINTER TYPES EVEN WITHOUT THE * . THIS MEANS IF A SLICE IS PASSED INTO A FUNCTION AND ITS VALUES ARE MODIFIED THE CHANGES ARE REFLECTED ON THE ORIGINAL SLICE OR MAP .
+
+Also to pass in a value that is addressable will be with the & so above example like so 
+
+Val1 := 1
+Val2 : =2 
+HandlePointers( &val1 , &val2)  
+
+HIGHER ORDER FUNCTIONS
+These are functions that RETURN a function that use the value call of the first function
+
+For example consider an iterable of strings that and we want to use use the slices.Collect package with a seq and predicate to apply our conditional collect 
+
+func Quantities(layers []string ) (int , float64) {
+	
+#note on line 1 of create the func is returning func yield func(string) bool 
+	
+create := func(ingredient string ) func( yield func(string) bool) {
+	return func(yield func(string) bool) {
+	for _, v := range layers { // iterate over the passed in string slice 
+	If v == ingredient {  //conditional yield to match the 1st function param 
+If !yield(v){
+	return 
+}	
+}
+}
+}
+} 
+return len(slices.Collect(create(“sauce”)) * 50 , float64(len(slices.Collect(create(“sauce”)))) * 0.2
+} 
+
+
+CHAPTER 11 FLOATING POINT NUMBERS
+Go has two floating point types
+
+float32: 32 bits (~6-9 digits precision)
+float64: 64 bits (~15 -17 digits precision) this is the default floating point types
+
+By default go will user float64  unless variable assigned with float32
+Function return call is float 32 or 
+Pass as argument to float 32
+
+
+CHAPTER 12 TIME
+
+A time in go  IS A  TYPE . 
+The date and time info can be accessed , compared and manipulated via its methods but there ate functions on the time package itself. 
+
+time.Parse parses strings into values of type TIme . 
+
+Go allows for defining the specified layout for this conversion using the attributed of the following
+
+Mon Jan 2 15:04:05 -0700 MST 2006
+
+Key takeway the above is a reference to fucking american time and is a mneumonic.
+There fore 1 : month , 2 :day , 15- (3): hour , 04(4) = minute , 05() : second 2006: year , 07 : offset 
+Eg : 
+import “time”
+func parseTime() time.Time {
+	date := “Tue, 09/22/1995, 13:00”
+	// this is saying i expect to see the month first then dte
+layout := “Mon , 01/02/2006 , 15:04”
+	
+t, err := time.Parse(layout, date)
+}
+=> 1995-09-22 13:00:00 +0000 UTC
+
+Now if you want to format the time type by the format you will fo something like this func main() {
+	layout := "15:04:05.00"
+	str := "19:05:16.88"
+	t, err := time.Parse(layout, str)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(t.Format(layout))
+	// with the layout statement I am expecting to see: 19:05:16.88 +0000 UTC
+	// but Go happily give me: 0000-01-01 19:05:16.88 +0000 UTC
+}
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    t := time.Date(1995,time.September,22,13,0,0,0,time.UTC)
+    formattedTime := t.Format("Mon, 01/02/2006, 15:04") // string
+    fmt.Println(formattedTime)
+}
+
+// => Fri, 09/22/1995, 13:00
+
+
+The time.Time type has various methods for accessing a particular time. e.g. Hour : Time.Hour() , Month : Time.Month(). More on how this works can be found in official documentation.
+The time includes another type, Duration, representing elapsed time, plus support for locations/time zones, timers, and other related functionality that will be covered in another concept
+
+CHAPTER 13 MAPS
+
+Maps are key value pairs like dictionaries or hash tables or associative array.
+
+Syntactically ther are so 
+
+map[KeyType]ElementType
+
+There are two ways to create a map.
+
+foo := map[string] int{}
+Foo := make(map[string]int)
+
+Operations with map
+Assign -> foo[“bar”] = 42
+Update -> foo[“bar”] = 44
+Get -> val := foo[“bar”]
+Delete -> delete(foo , “bar)
+
+Attempting to retrieve a value that does not exist will return the zero value of the specified. In other words if the key doesnt exist!
+Be careful if zero is an expected value then.
+
+Checking if a key exists in the map 
+
+Value, exists := foo[“baz”] 
+0      false 
+
+
+
+func main() {
+	foo := make(map[string]int)
+	foo2 := make(map[string]int)
+
+	foo["baz"] = 0 // assign a key to one map but not the other
+
+	val1, exists := foo["baz"]
+
+	val2, exists2 := foo2["baz"]
+
+	fmt.Println(val1, exists)
+	fmt.Println(val2, exists2)
+}
+Output => 
+0 true
+0 false
+
+
+Chapter 14 Range Iteration
+
+Range iteration allow  using key index over the following collections
+
+Slices maps channels 
+You can use the key or index for this as well/
+
+EVERY ITERATION RETURNS TWO VALUES THE INDEX/KEY AND A COPY OF OF THE ELEMENT AT THAT INDEX KEY.
+
+Iterating over a slice
+
+Xi := []int{10,20,30}
+for i,x := range xi {
+	fmt.Println(i,x)
+}
+// outputs:// 0, 10 // 1, 20 // 2, 30
+
+Iterating over a map
+NOTE THAT ITERATING OVER A MAP IS UNORDERED AND WILL NOT GUARANTEE THE SAME RESULT
+
+hash := map[int]int{9:10 , 99:20 ,999:30}
+
+For k ,v := range hash {fmt.Println(k,v)}
+// outputs, for example:// 99 20// 999 30// 9 10
+
+Omitting values
+If you do not wish to explicitly declare the value then 
+
+Xi = int[]{10,20,30}	
+for k, _ range xi {
+	fmt.Println(k) => prints index
+}
+for _, v range xi {
+	fmt.Println(v) => prints value
+}
+
+Or you can omit the value entirely
+for i := range xi {
+  fmt.Println(i)
+  fmt.Println(xi[i]) => this will print value found at index
+}
+// outputs:// 0// 1// 2
+xi := []int{10, 20, 30}
+count := 0
+for range xi {
+  count++
+} the above will just iterate over values when omit both key and value
+
+
+CHAPTER 15 POINTERS 
+A fundamental part of go is its use of pointers
+
+They are a way to share memory: a reference. 
+
+This is useful because : 
+With large amounts of data making copies between functions is inefficient. By passing memory location of where data is stord prgams become less resource instive.
+WHEN POINTERS ARE PASSED BETWEEN FUNCTIONS AND MODIFY THIS SINGLE ADDRESSABLE SPACE they are immediately visible when that function calle ends.
+
+Consider a regular integer variable a.
+Var a int
+When this variable is declared go has to store its value somewhere and this process is abstracted from us. Whenever this value is accessed go has to fetch the value stored in memory and say add something like so a+2 .
+
+Pointers however directly talk about the memory address to which a variable is pointing
+
+var p *int // 'p' contains the memory address of an integer
+The above means the pointer will hold the memory address of an integer. NIL IS THE ZERO VALUE OF POINTERS IN GO.
+
+GETTING THE POINTER OF A VRIABLE
+Use the & operator 
+Var a int
+a = 2
+Var p *int
+p = &a // p now contains the memory address of ‘a’
+
+WE HAVE SEEN HOW TO ACCESS THE MEMORY ADDRESS AND STORE THIS AS A VALUE WITH THE & OPERATOR. BUT WHAT ABOUT ACCESSING THE VALUE OF THE AFOREMENTIONED VARIABLE THAT IS A POINTER ? ENTER DEREFERENCING
+Var b int
+b = *p ⇒ use the * operator to deference a pointer to get its value 
+In a roundabout way dereferencing can be used to modify a value.BE MINDFUL HOWEVER THAT DEREFERNCING A NIL POINTER WILL CRASH THE SYSTEM.
+
+var a int        // declare int variable 'a'
+a = 2            // assign 'a' the value of 2
+
+var pa *int
+pa = &a          // 'pa' now contains to the memory address of 'a'
+*pa = *pa + 2    // increment by 2 the value at memory address 'pa'
+
+fmt.Println(a)   // Output: 4
+
+POINTERS TO STRUCTS
+This can also be done for structs
+
+type Person struct {
+	Name string
+	Age  int 
+}
+Var peter Person
+Peter = Person{Name: “Peter” , Age:22}
+
+var p *Person ⇒ is a pointer to a type person
+p = &peter 
+INTERESTINGLY we could have directly created the value in memory and stored in a variable the pointer var p *Person
+
+p = &Person{Name: "Peter", Age: 22}
+
+
+
+
+When we have a pointer to a struct, we don't need to dereference the pointer before accessing one of the fields:
+var p *Person
+p = &Person{Name: "Peter", Age: 22}
+
+fmt.Println(p.Name) // Output: "Peter"
+                    // Go automatically dereferences 'p' to allow
+                    // access to the 'Name' field
+
+SLICES AND MAPS ARE ALREADY POINTERS 
+THEY HAVE POINTERS IN THIER IMPLEMENTATION MEANING 
+func incrementPeterAge(m map[string]int) {
+	m["Peter"] += 1
+}
+
+WILL MODIFY THE PARAMETER PASSED INTO IT SINCE ITS NOT COPY WITH THE EXCEPTION OF APPEND THAT “MIGHT NOT” MODIFY
+
+CHAPTER 16 METHODS FUNCTION RECIEVERS
+
+A method is a function with a ‘receiver’ argument. 
+
+The receiver argument appears in its own argument list between func and name of method	.
+
+func (receiver type) MethodName(parameters)(returnTypes){
+}
+
+
+
+
+
+YOU CAN ONLY DEFINE A METHOD WITH A RECIEVER WHOSE TYPE IS DEFINED IN THE SAME PACKAGE AS THE METHODF
+
+type Person struct {
+	Name string
+}
+func (p Person) Greetings() string {
+	Return fmt.Sprintf(“Welcome %s”, p.Name)
+}
+S := Person{Name:”Bronson”}
+fmt.Prinln(s.Greetings()) // output => welcome Bronson !
+
+There are two types of receivers:
+VALUE RECEIVERS
+POINTER RECEIVERS 
+
+Methods with a value receiver operate ON A COPY OF VALUE PASSED TO IT. which means any modification done to the receiver inside the method is not visible to the caller.
+
+A pointer receiver then simply modifies the receiver function.
+Such modifications are visible to the caller of the method as well.
+type rect struct {
+	width, height int
+}
+func (r *rect) squareIt() {
+	r.height = r.width
+}
+r := rect{width: 10, height: 20}
+fmt.Printf("Width: %d, Height: %d\n", r.width, r.height)
+// Output: Width: 10, Height: 20
+r.squareIt()
+fmt.Printf("Width: %d, Height: %d\n", r.width, r.height)
+// Output: Width: 10, Height: 10
+
+
+CHAPTER 17 RUNES
+USING RUNES
+VARIABLES OF TYPE RUNE ARE DECLARED BY PLACING A CHARACTER INSIDE SINGLE QUOTES
+myRune := '¿'
+Since  rune is just an alias for int32 , printing a runes type will yields int32
+
+myRune := '¿'
+fmt.Printf("myRune type: %T\n", myRune)
+// Output: myRune type: int32
+
+
+A RUNE TYPE IN GO IS AN ALIAS FOR int32 . 
+Since this is underlying type the rune type holds a signed 32-bit integer value.
+HOWEVER UNLIKE int32 the INTEGER STORED IN rune type represents A SINGLE UNICODE CHARACTER.
+
+Unicode and Unicode Code points
+Unicode is the superset of Ascii that represents characters by assigning a unique number to each character,
+
+Unicode aims to represent all the wolds characters including various alphabets numbers , symbols and even emoji as Unicode code points.
+
+In Go,the run type represents a single Unicode code point.
+
+Unicode Character
+Unicode Code Point
+Decimal Value
+0
+U+0030
+48
+A
+U+0041
+65
+a
+U+0061
+97
+¿
+U+00BF
+191
+π
+U+03C0
+960
+🧠
+U+1F9E0
+129504
+
+
+UTF-8 
+If Unicode is a code point of every character the UTF-8 is the character encoding for each of these code points .
+IT WILL ENCODE THEM AS EITHER 1,2,3,4 bytes. 
+Since a unidocde code point can be encoded with maximum 4 bytes , the rune tupe needs to be able to hold up to 4 bytes of data. THIS IS WHY RUNE TYPE IS ALIAS FOR int32 as in int 32 is capable of holding 4 bytes of data 
+
+Go source code files are encoded using UTF-8.
+
+Similarly, printing a rune's value will yield its integer (decimal) value:
+myRune := '¿'
+fmt.Printf("myRune value: %v\n", myRune)
+// Output: myRune value: 191
+
+TO PRINT THE UNICODE CHARACTER REPRESENTED BY THE RUNE USE THE %c formatting verb
+myRune := '¿'
+fmt.Printf("myRune Unicode character: %c\n", myRune)
+// Output: myRune Unicode character: ¿
+To print the Unicode code point represented by the rune, use the %U formatting verb:
+myRune := '¿'
+fmt.Printf("myRune Unicode code point: %U\n", myRune)
+// Output: myRune Unicode code point: U+00BF
+
+RUNES & STRINGS
+Strings in go are encoded using UTF-8 which means they contain unicode character meaning they are stored or encoded as 1,2,3,4 bytes dpenidng on the uncicpde character they represent . 
+
+
+When we iterate over a string go converts the string into a series of Runes , each of which are 4 bytes. 
+HOWEVER THE range iteratoes over the strings runes not its bytes .
+
+
+
+
+
+
+Consider the iteration over a string below
+myString := "❗hello"
+for ind, char := range myString {
+	fmt.Printf(“Index: %d\tCharacter: %c\t\t\Code point: %U\n”,index,char,char)
+}
+/ Output:
+// Index: 0	Character: ❗		Code Point: U+2757
+// Index: 3	Character: h		Code Point: U+0068
+// Index: 4	Character: e		Code Point: U+0065
+// Index: 5	Character: l		Code Point: U+006C
+// Index: 6	Character: l		Code Point: U+006C
+// Index: 7	Character: o		Code Point: U+006F
+
+
+TAKEAWAYY!! SINCE RUNES CAN BE STORED AS 1 , 2 3 ,4 BYTES THE LENGTH OF STRING MAY NOT EQUAL NUMBER OF CHARACTERS IN THE STRING. 
+USE BUILTIN LEN FUNCTION TO GET THE LENGTH OF A STRING IN BYTES AND THE utf.RuneCountInString function to get the number of runes in a string.
+import “unicode/utf8”
+mystring := "❗hello"
+stringLength := len(myString)
+numberOfRunes := utf8.RuneCountInString(myString)
+fmt.Printf(“MyString - length: %d\n” , stringLength , numberOfRunes)
+// Output: myString - Length: 8 - Runes: 6
+
+
+CHAPTER 18 INTERFACES
+An interface type in its simplest form is a set of method signatures.
+For example an interface definition with two methods add and value 
+
+
+type Counter interface {
+	Add(increment int )
+	Value() int
+} 
+Parameter names can be omitted from the interface definition but increase readability.
+Convention dictates interfaces oftren end with er such as Reader or Stringer and do not contain word Interface or I .
+
+
+IMPLEMENTING AN INTERFACE 
+Any type that defined the methods of the interface automatically implciilty implements the interface. There is no implements in go .
+
+
+THE FOLLOWING TYPE IMPELMENTS THE COUNTER INTERFace above
+type Stats struct {
+	value int }
+func (s Stats) Add (v int) {
+	s.value +=v
+}
+func (s Stats) Value() int {
+	return s.value
+}
+func (s Stats) SomeOtherMethod() {
+//The type	can have additional methods mentioned in the interface
+}
+It does not matter if the methods has a value or pointer receiver. 
+A value of interface type can hold any value that implmeents those methods. 
+This means Stats can now be used in all places that expect the Counter interface.  
+func SetUpAnalytics(counter Counter) {
+    // ...
+}
+// recall that stats implicilty implemnts the fucntions 
+stats := Stats{}
+SetUpAnalytics(stats)
+// works because Stats implements Counter
+ Keep in mind that  the function receiver does become part of the type's method set, and therefore determines whether the type implements an interface. The receiver type (value vs. pointer) affects which exact type implements the interface.
+Consider hte above are value receivers which means they operate on copies i.e pass by value .
+IN addition a type can easily implement multiple interfaces - it just needs the necessary methods defined 
+Empty interface
+There is one very special interface type in Go, the empty interface type that contains zero methods. The empty interface is written like this: interface{}. In Go 1.18 or higher, any can be used as well. It was defined as an alias.
+Since the empty interface has no methods, every type implements it implicitly. This is helpful for defining a function that can generically accept any value. In that case, the function parameter uses the empty interface type.
+CHAPTER 19 ZERO VALUES
+Variables declafes without an explicit initial value default to the zero value of their respective type
+Below is the table 
+Type			zero value
+BOOLEAN		false
+Numeric		0
+String		“”
+Pointer		nil
+Function 	nil
+Interface	nil
+Slice		nil
+Channel 		nil
+Map			nil 
+NOTICE HOW STRUCTS ARE ABSENT. STRUCTS DEPEND ON THIER FIELDS AND THIER ZERO VALUE DEPENDS ON ALL THIER FIELDS ALSO HAVING ZERO VALUES
+CHAPTER 20 STRINGERS
+A stringer is an interface defining the string format of values
+type Stringer interface {
+	String() string
+}	
+Types that want to implement this interface ,mUST HAVE A STRING() method that returns a human friendly string representation of the type
+THE FMT package and many other will look for this method to format and print values
+Consider a scenario of an application with geographical distances using different units.
+Below have are two defined types DistanceUnit and Distance 
+type DistanceUnit int
+Const (
+Kilometer DistanceUnit = 0
+Mile DistanceUnit = 1
+)
+type Distance struct {
+	number float64
+	unit DistanceUnit
+}
+Because these types do not implement the interface stringer they lack the String method WHICH MEANS FMT WILL PRINT THE VALUES WITH DEFAULY PACKAGE 
+func(sc DistanceUnit) String() string { 
+	units := []string{“km”, “mi”}
+	return units[sc]
+} the above function relies on km and mile type ebeing constgances either as 1 or 0 
+func (d Distance) String() string {
+	Return fmt.Sprintf(“%v , %v”, d.number , d.unit)
+}
+fmt package function will call these methods when formatting Distance values
+kmUnit := Kilometer , kmUnit.String() => “km”
+dist := Distance {
+	Number:790.7 , unit: Kilometer, 
+} => dist.String() => 790.7km
+CHAPTER 21 Type conversion
+Type converting (Also known as type casting) is done via a function call.
+For xample to convert an int to a lofat 64 
+var x int =42 , f:= float64(x)
+Converting between primitive types and strings
+The strconv package is for converting int and string
+Import “strconv” 
+Var intSTRING string = “42”
+var i,err = strconv.Atoi(intstring)
+var number int 12 = 12
+Var s string = string.Itoa(number)
+CHAPTER 22 type assertions
+INTERFACES in go can introduce ambiguity ON THE UNDERLYING TYPE .
+A type assertion can extract the interfaces values underlying concret value using this syntax
+interfaceVariable.(concreteType)
+Eg: var input interface{} =12
+number:=input.(int)
+BY ITSELF If the interface variable does not hold this value it will cause a panic
+To avoid panic
+str , ok := input.(string)
+If input holds a strong the str will be underlying value and ok will be true.  Otherwise str will be zero value type and ok will be false.
+type switches
+Can perform several type assertions in series and has same syntax as type assertion.
+
+
+var i interface{} = 12 
+switch v := i.(type){
+	case int: fmt.Printf(“the integer %d\n”,v)
+	case string: fmt.Printf(“the string %s\n”,v)
+default: fmt.Printf(“type,%T not handled explicitly : %#v\n”,v,v)	
+}
+func DescribeAnything(i interface{}) string {
+	
+    switch v := i.(type) {
+        case int: return DescribeNumber(float64(v))
+        case float64 : return DescribeNumber(float64(v))
+        case NumberBox : return DescribeNumberBox(v)
+        case FancyNumberBox : return DescribeFancyNumberBox(v)
+		default : return  "Return to sender"      
+    }}
+Chapter 22 ERRORS
+Go does not typically use error handling via exceptions.
+Errors are normal value types that implement the built-in error interface
+
+
+type error interface {
+	Error() string
+}
+If an error can happen in a function then error must be included in the return type . convention dictates error as the last value 
+func DoSOmethign() (int, error){}
+
+
+ Creating and returning a simple error
+Considered best practise tahat if error to return zero values if an error is present. Exceptions could be where return values are meaningful in case of an error
+
+
+func DoSomething() (SomeStruct , int, error ) {
+	Return SomeStruct{}, 0 , errors.New(‘Failed to calculate result’)
+}
+In case same error occurs in multiple places then you can store in variable
+import “errors”
+var ErrNotFound = errors.New(‘resource was not found’)
+func DoSomething() error {return ErrNotFound}
+func Foo()(int , error) {return 10, nil}
+
+
+When calling function that returns an error, common to store error value and check there was no error.
+func processUserFile() error {
+	file ,err := os.Open(“./users.csv”)
+	if err != nil {return err} 
+	//dosomething with file
+}
+
+
+Custom error types
+Anything that implements Error()  can serve as error . 
+Struct can be used for this  .
+Also its best to set up Error string metod with a pointer receiver for reasoning see https://stackoverflow.com/questions/50333428/custom-errors-in-golang-and-pointer-receivers/50333850#50333850 .
+type MyCustomError struct {
+	message string 
+	details string 
+}below is func receiver,above struct now implements error
+func (e *MyCustomEror) Error() string {
+	return fmt.Sprintf(“%s, details: %s”, e.message, e.details)
+}
+func someFunction() error {
+//… 
+return &MyCustomError {
+Message: “..”
+Details: “...”
+}}
+CHAPTER 23 FIRST CLASS FUNCTIONS
+In go functions are first-class values , which means you can do the same with them as other values , assign functions to variables , pass them as arguments to toher functions , return functions from other functions .
+Consider the below 
+func engGreeting(name string) string{
+return fmt.Sprintf(“Hello %s , nice to meet you”,name)
+}
+func espGreeting(name string) string {
+	return fmt.Sprintf(“hola much gust”,name)
+} 
+greeting := engGreeting 
+//IMPORTANT! GREETING IS A VARIABLE OF TYPE func(string) string !!
+greeting := espGreeting //we can do this because of above 
+
+
+Function values allow to parametize not only data but because functions are first class values , behaviour  CAN ALSO BE PARAMETIZED.
+func dialog(namestring,greetingFunc func(string) string){
+	fmt.Println(greetingFunc(name))
+	fmt.Print(“I’m a dialog bot.”)
+}
+func espGreeting(name string) string {
+	return fmt.Sprintf(“hola”,name) 
+}
+greeting := espGreeting
+Value of uninitialized variable of function type is nil.
+var dutchGreeting func(string) string
+dutchGreeting(“Alice”) // will create a panic!
+
+
+FUNCTION TYPES
+Function values are possible because of function types.
+A FUNCTION TYPE DENOTES THE SET OF ALL FUNCTIONS WITH THE SAME SEQUENCE OF PARAMETER TYPES and same sequence of result types.
+User defined types can be declared on top of function types. For example the dlog function can be updated in the previous page.
+type greetingFunc func(string) string
+func dialog(name string , f greetingFunc){
+	fmt.Println(f(name))
+	fmt.Println(“I’m a dialog bot”)
+}
+Anonymous functions
+These functions are defined at their point of use without name following the func keyword and can access the variables in the enclosing function.
+func fib() func() int {
+	var n1 , n2 int
+	return func() int {
+		If n1 =0 && n2 ==0 {
+		n1=1}
+		else { n1 , n2 = n2 , n1 + n2}
+		return n2
+}} }
+next := fib()
+for i:=0; i < N; i++ {
+	fmt.Printf(“F%d\t= %4d\n”, i next())
+} 
+Anonymous functions like above allow to keep state between function calls!
+KNOWN AS A CLOSURE
+
+
+
+

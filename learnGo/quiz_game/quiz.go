@@ -85,15 +85,6 @@ func evaluate(slice1 string, slice2 string) bool {
 
 	checker, _ := strconv.Atoi(slice1)
 	result, _ := strconv.Atoi(slice2)
-	//= strings.Split(slice1,"+")
-	//var checker int
-	// if strings.Contains(slice1, "+") {
-	// 	var stuff = strings.Split(slice1, "+")
-	// 	val1, _ := strconv.Atoi(stuff[0])
-	// 	val2, _ := strconv.Atoi(stuff[1])
-	// 	checker = val1 + val2
-	// 	fmt.Println(checker, "is now")
-	// }
 
 	fmt.Println(checker, "is now")
 	fmt.Println(checker, result)

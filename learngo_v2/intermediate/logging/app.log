@@ -1,0 +1,7 @@
+INFO:2025/05/26 17:11:34 logging.go:44: This is a infor message
+WARN:2025/05/26 17:11:34 logging.go:45: This is an warn message
+ERROR:2025/05/26 17:11:34 logging.go:46: This is an error message
+INFO2025/05/31 15:40:43 logging.go:38: This ois a debug message
+INFO:2025/05/31 15:40:43 logging.go:44: This is a infor message
+WARN:2025/05/31 15:40:43 logging.go:45: This is an warn message
+ERROR:2025/05/31 15:40:43 logging.go:46: This is an error message

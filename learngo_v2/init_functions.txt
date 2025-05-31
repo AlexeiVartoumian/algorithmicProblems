@@ -1,0 +1,4 @@
+
+database initializatiom
+pacakages only implicity imported pacakges are accessed
+standard libary provides foundational features to program. 

@@ -13,7 +13,7 @@ type Person struct {
 	FirstName string  `json:"first_name"`    //mention the json field in double quotes json package looks for struct tag and then double qutoes
 	Age       int     `json:"age,omitempty"` // tags can be used for object relation management for example `db: "user_id"`
 	Email     string  `json:"email"`
-	Address   Address `json: "address"`
+	Address   Address `json:"address"` //keep in mind no space in json defintino
 	//note that omitempty will not include the key of the kson value
 }
 
