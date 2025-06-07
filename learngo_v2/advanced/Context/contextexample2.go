@@ -23,7 +23,7 @@ func checkEvenOdd(ctx context.Context, num int) string {
 	}
 }
 
-func main() {
+func main2() {
 	ctx := context.TODO()
 	result := checkEvenOdd(ctx, 5)
 	fmt.Println("Result with context.TODO():", result)
@@ -31,7 +31,7 @@ func main() {
 	ctx = context.Background()
 	//WithTimeoutmethod available on context needs a parent context
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second) // here we create a context with a deadline of 1 second
-	defer cancel()
+	defer cancel()                                         // using  a channell + mutex + gorotuines to send cancellation sginal
 
 	fmt.Println("result from timeout context", result)
 	time.Sleep(3 * time.Second)
