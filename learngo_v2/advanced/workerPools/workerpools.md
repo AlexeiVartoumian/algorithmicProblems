@@ -1,5 +1,5 @@
 workpool
-design pattern to mange a group of goroutines which process a queue of taks 
+design pattern to mange a fixed group of goroutines aka workers which process a queue of taks 
 
 
 why use worker pools
