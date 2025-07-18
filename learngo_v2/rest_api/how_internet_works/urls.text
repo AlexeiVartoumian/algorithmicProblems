@@ -1,0 +1,20 @@
+uri (uniform resource identifier) - string of characters to indetifier resources
+url (uniform resource locator) specific type of uri prvoding a means of lcaoting resource on internet
+includes protocol domain path and maybe query string + frgament
+specific type of uri , provides a sp
+urn (uniform resource name)
+
+keep in jind that urls provide a convenient human readble way to access
+resources while up addresses are numerical
+identifiers for routing data accross networks
+
+compononents of a url
+
+- scheme aka protocol http https
+- host i.e the name that resolves to an ip address
+- port 443 for https , 80 for http and so on
+- path
+ speicifc loaction of the resource on the server
+- query
+ query strings used to pass parameters  in a url its a ?
+- fragment

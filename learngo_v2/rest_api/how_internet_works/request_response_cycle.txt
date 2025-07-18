@@ -1,0 +1,47 @@
+
+request response cycle
+
+steps in request response cucle
+- client sends a request -> sends a http requestr message to the server
+ could be get poost put patch delete for http rpovotocl
+  contains resource path and the http version 
+  diff versions on http protocol
+   also have aheaders they conatin additional information
+   eg user agent accept lanfuage , coockies
+ then there is request body  containing data for method like post
+
+ - then dns resolution
+  where domain is converted to an ip and uses domain name system to resolve into ip address
+   in subsequent step
+establish connection
+tcp handhake is intiated with ssl tlks for securtre conenciton
+- then the server resives the reqeust 
+which means interpreting the request line headers and body 
+
+- then routing determins the appropriate handle for the request
+based on the resource path and the server verifies clients indentity
+and permissions if necessary.
+acessing a specific route a function runs on the server
+which returns some values
+- once processes then send response
+https resonse includes https status 
+and sends to client over established connection
+
+- finally client recieves the rsponse  and porcessing + parses the
+repsonse i.e json data 
+
+now we can talk about request types
+http request components
+http methods : get , post , put = replace patch = modify certain part , delete
+status 
+
+http resonse status codes
+100- 199 -> informational
+200 -299 -> successful
+300 -299 -> redirection
+400- 499 -> request contain bad error client sent something errorneous
+500 -599 -> server failed to fufill a valid request. common error is internal server error 
+
+attempt to minimize number of reqquests by combinin resources
+optimize by caching
+handle errors gracefully with error handling

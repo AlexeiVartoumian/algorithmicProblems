@@ -1,0 +1,42 @@
+
+
+web requests jounrey
+1 entering a url 
+2 dns lookup dns server interaction
+    - browser checks cache to see if it knows ip addr 
+    - then query dns server if it knows the name
+    - browser send dns query to dns resolver
+    - if not found then recursively queried to top level domain i.e rppt
+
+3 establishing a tcp connection
+    - broser send a tcp syn (sychronize) packet to the sever
+    - sever responds wth a syn-ack packet
+    - browser sends an ack packet compketeing three way handshake
+    - full duplex connection
+
+4 sending an http request
+ - browser specifies for eg a get request specifying resource it wishes to retrieve
+   following http 1.1 protocol
+5 server processing and response
+ - respons includes status code i.e 200 ok
+ - also headers content type compression may contain headers
+6 rendering webpage , interchangeable with client side operations
+- sends data could be json , or could be we page whatever the
+data representaion is encoded as
+
+network level tcp overview
+applicaiton layer
+ - protocols -> http , https , dns
+    responsible for high level apis , resource sharing and remote file access
+
+transport layer
+- protocls tcp , udp
+responsible for end to end communication , error checking and data flow control
+
+internet layer
+- protocols ip
+responsible for addressing , routing , packet forwarding
+
+link layer
+protocls ethernet , wifi
+responsible for phsyical addressing and media access control
