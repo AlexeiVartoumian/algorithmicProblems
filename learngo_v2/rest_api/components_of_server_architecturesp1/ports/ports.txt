@@ -1,0 +1,13 @@
+
+ports are a virtual point where network connections start and end
+used to distinguish between diffrent types of traffic
+
+65535 ports
+common ports - 0-1023
+regiestered ports - 1024 -49151 
+dynamic ports 49152-65535
+
+
+eg an api needs a port to unfciont
+emails need ports to function
+interntet needs ports to function
