@@ -1,0 +1,106 @@
+python
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    42.02ms   20.66ms 195.87ms   76.71%
+    Req/Sec     1.51k   504.56     3.15k    68.72%
+  723778 requests in 30.08s, 131.15MB read
+Requests/sec:  24062.29
+Transfer/sec:      4.36MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    44.46ms   28.09ms 386.30ms   84.22%
+    Req/Sec     1.48k   592.45     3.78k    71.23%
+  708536 requests in 30.09s, 128.39MB read
+Requests/sec:  23547.38
+Transfer/sec:      4.27MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    28.49ms   12.26ms 271.24ms   75.43%
+    Req/Sec     2.21k   542.88     3.76k    68.46%
+  1058081 requests in 30.09s, 191.72MB read
+Requests/sec:  35165.87
+Transfer/sec:      6.37MB
+
+node
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    27.77ms   14.40ms 300.89ms   83.73%
+    Req/Sec     2.31k   602.05     4.88k    70.78%
+  1105538 requests in 30.08s, 212.97MB read
+Requests/sec:  36754.82
+Transfer/sec:      7.08MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    37.47ms   22.29ms 220.18ms   81.23%
+    Req/Sec     1.74k   632.01     3.84k    66.16%
+  832594 requests in 30.07s, 160.39MB read
+Requests/sec:  27684.44
+Transfer/sec:      5.33MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.41ms   11.33ms 287.69ms   80.69%
+    Req/Sec     2.49k   558.54     4.83k    69.98%
+  1191511 requests in 30.05s, 229.54MB read
+Requests/sec:  39648.10
+Transfer/sec:      7.64MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.40ms   11.40ms 272.42ms   80.87%
+    Req/Sec     2.49k   539.59     6.01k    69.07%
+  1191088 requests in 30.08s, 229.45MB read
+Requests/sec:  39598.72
+Transfer/sec:      7.63MB
+
+go
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.89ms   14.67ms 284.33ms   75.23%
+    Req/Sec     2.48k   546.01     4.53k    70.86%
+  1185121 requests in 30.08s, 154.84MB read
+Requests/sec:  39399.85
+Transfer/sec:      5.15MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    36.05ms   17.22ms 306.52ms   72.98%
+    Req/Sec     1.76k   584.70     4.35k    68.49%
+  841766 requests in 30.08s, 109.98MB read
+Requests/sec:  27988.87
+Transfer/sec:      3.66MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    31.36ms   15.83ms 270.90ms   74.57%
+    Req/Sec     2.03k   698.38     5.89k    66.69%
+  971506 requests in 30.08s, 126.93MB read
+Requests/sec:  32296.33
+Transfer/sec:      4.22MB
+terminal@ok:~$ wrk -t16 -c1000 -d30s "http://18.132.17.80:8080/person?id=1"
+Running 30s test @ http://18.132.17.80:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    39.92ms   18.39ms 326.04ms   73.99%
+    Req/Sec     1.58k   496.95     4.74k    71.65%
+  758043 requests in 30.09s, 99.04MB read
+Requests/sec:  25189.32
+Transfer/sec:      3.29MB
+
+

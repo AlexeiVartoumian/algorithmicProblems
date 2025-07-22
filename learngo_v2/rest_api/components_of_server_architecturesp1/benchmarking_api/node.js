@@ -72,14 +72,14 @@ function main() {
     console.log(`Master process ${process.pid} using ${numCPUs} CPU cores`);
     console.log(`Starting ${numCPUs} worker processes to match Go's concurrency...`);
 
-    // Fork workers for each CPU core (equivalent to Go's GOMAXPROCS)
+    
     for (let i = 0; i < numCPUs; i++) {
       cluster.fork();
     }
 
     cluster.on('exit', (worker, code, signal) => {
       console.log(`Worker ${worker.process.pid} died, restarting...`);
-      cluster.fork(); // Restart worker if it dies
+      cluster.fork(); 
     });
 
   } else {

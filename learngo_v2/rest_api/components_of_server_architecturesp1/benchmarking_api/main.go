@@ -59,4 +59,5 @@ func main() {
 	http.HandleFunc("/person", getPersonHandler)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+
 }

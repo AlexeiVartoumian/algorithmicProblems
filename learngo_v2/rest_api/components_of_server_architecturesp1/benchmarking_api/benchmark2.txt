@@ -1,0 +1,267 @@
+
+
+
+inside ec2
+go
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.64ms    6.04ms 182.50ms   92.21%
+    Req/Sec    22.84k     4.45k   61.82k    72.65%
+  10930117 requests in 30.09s, 1.39GB read
+Requests/sec: 363196.40
+Transfer/sec:     47.45MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.67ms    4.25ms  63.08ms   86.32%
+    Req/Sec    22.82k     4.91k   91.50k    73.10%
+  10917001 requests in 30.09s, 1.39GB read
+Requests/sec: 362803.15
+Transfer/sec:     47.40MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     4.08ms    8.37ms 250.48ms   94.33%
+    Req/Sec    22.38k     4.93k  117.40k    74.91%
+  10709747 requests in 30.10s, 1.37GB read
+Requests/sec: 355805.28
+Transfer/sec:     46.49MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.59ms    4.10ms  56.46ms   86.27%
+    Req/Sec    22.95k     5.03k  129.85k    73.43%
+  10987668 requests in 30.09s, 1.40GB read
+Requests/sec: 365126.06
+Transfer/sec:     47.70MB
+
+
+
+node 
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     6.77ms   34.60ms 753.98ms   98.74%
+    Req/Sec    17.44k     3.42k   47.74k    78.33%
+  8284460 requests in 30.10s, 1.56GB read
+Requests/sec: 275247.13
+Transfer/sec:     53.02MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.92ms    6.93ms 292.84ms   98.35%
+    Req/Sec    17.38k     3.31k   68.50k    76.08%
+  8318430 requests in 30.10s, 1.56GB read
+Requests/sec: 276388.72
+Transfer/sec:     53.24MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     4.80ms   16.80ms 490.08ms   99.18%
+    Req/Sec    17.13k     3.18k   47.23k    77.76%
+  8182352 requests in 30.10s, 1.54GB read
+Requests/sec: 271837.17
+Transfer/sec:     52.37MB
+
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.68ms    2.55ms  47.24ms   68.25%
+    Req/Sec    16.74k     2.81k   82.66k    72.87%
+  8022190 requests in 30.09s, 1.51GB read
+Requests/sec: 266617.85
+Transfer/sec:     51.36MB
+
+
+python
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     7.46ms    3.06ms  44.61ms   71.24%
+    Req/Sec     8.09k     1.79k  102.54k    96.62%
+  3878024 requests in 30.10s, 702.69MB read
+Requests/sec: 128827.73
+Transfer/sec:     23.34MB
+
+[ec2-user@ip-10-0-16-161 ~]$ wrk -t16 -c1000 -d30s "http://localhost:8080/person?id=1"
+Running 30s test @ http://localhost:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     7.37ms    3.14ms  42.07ms   71.24%
+    Req/Sec     8.21k     1.45k   69.99k    89.75%
+  3937132 requests in 30.10s, 713.40MB read
+Requests/sec: 130807.76
+Transfer/sec:     23.70MB
+
+
+from workstation -> ec2
+node
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    23.27ms   13.83ms 281.93ms   87.27%
+    Req/Sec     2.82k   828.12     4.89k    66.87%
+  1349403 requests in 30.07s, 259.95MB read
+Requests/sec:  44873.33
+Transfer/sec:      8.64MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.18ms   17.98ms 284.55ms   85.67%
+    Req/Sec     2.65k   771.81     4.76k    68.18%
+  1266722 requests in 30.09s, 244.02MB read
+Requests/sec:  42095.21
+Transfer/sec:      8.11MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    24.00ms   10.62ms 274.73ms   78.91%
+    Req/Sec     2.63k   611.58     6.20k    67.09%
+  1258789 requests in 30.07s, 242.50MB read
+Requests/sec:  41863.89
+Transfer/sec:      8.06MB
+
+wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    23.20ms   14.46ms 156.06ms   74.53%
+    Req/Sec     2.78k   667.53     6.01k    66.13%
+  1331642 requests in 30.08s, 256.53MB read
+Requests/sec:  44273.57
+Transfer/sec:      8.53MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    22.67ms   13.75ms 269.42ms   75.09%
+    Req/Sec     2.82k   557.93     4.59k    66.54%
+  1349867 requests in 30.09s, 260.04MB read
+Requests/sec:  44862.83
+Transfer/sec:      8.64MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    20.30ms   10.25ms 105.01ms   73.15%
+    Req/Sec     3.12k   579.00     6.11k    68.42%
+  1496597 requests in 30.09s, 288.31MB read
+Requests/sec:  49731.73
+Transfer/sec:      9.58MB
+----------------------------------------------------------------
+go
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    21.42ms   12.42ms 157.51ms   81.44%
+    Req/Sec     3.05k   788.72     5.42k    63.23%
+  1458222 requests in 30.10s, 190.52MB read
+Requests/sec:  48443.74
+Transfer/sec:      6.33MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    23.20ms   11.66ms 252.66ms   81.23%
+    Req/Sec     2.76k   707.95     6.29k    67.63%
+  1319229 requests in 30.09s, 172.36MB read
+Requests/sec:  43840.22
+Transfer/sec:      5.73MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://3.9.18.54:8080/person?id=1"
+Running 30s test @ http://3.9.18.54:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    20.85ms    9.55ms 237.20ms   80.90%
+    Req/Sec     3.04k   611.11     6.27k    67.92%
+  1454040 requests in 30.09s, 189.98MB read
+Requests/sec:  48321.89
+Transfer/sec:      6.31MB
+
+ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    28.92ms   12.64ms 285.56ms   74.21%
+    Req/Sec     2.18k   553.50     5.25k    68.83%
+  1041870 requests in 30.08s, 136.12MB read
+Requests/sec:  34631.74
+Transfer/sec:      4.52MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    21.13ms   12.16ms 207.25ms   89.02%
+    Req/Sec     3.09k   764.81     8.38k    74.20%
+  1473439 requests in 30.08s, 192.51MB read
+Requests/sec:  48984.92
+Transfer/sec:      6.40MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    20.79ms   11.40ms 282.09ms   74.59%
+    Req/Sec     3.06k   540.09     6.21k    67.23%
+  1466469 requests in 30.07s, 191.60MB read
+Requests/sec:  48771.23
+Transfer/sec:      6.37MB
+
+----------------------------------------------------------------------------
+python
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    18.33ms    6.51ms  75.97ms   73.04%
+    Req/Sec     3.40k   490.77     4.70k    69.46%
+  1627515 requests in 30.08s, 294.90MB read
+Requests/sec:  54109.44
+Transfer/sec:      9.80MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    18.33ms    6.51ms  75.97ms   73.04%
+    Req/Sec     3.40k   490.77     4.70k    69.46%
+  1627515 requests in 30.08s, 294.90MB read
+Requests/sec:  54109.44
+Transfer/sec:      9.80MB
+
+ok@bench25:~$ wrk -t16 -c1000 -d30s "http://13.42.20.248:8080/person?id=1"
+Running 30s test @ http://13.42.20.248:8080/person?id=1
+  16 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    19.72ms    7.47ms 260.07ms   76.58%
+    Req/Sec     3.18k   529.62     4.73k    70.59%
+  1521852 requests in 30.09s, 275.76MB read
+Requests/sec:  50577.69
+Transfer/sec:      9.16MB
