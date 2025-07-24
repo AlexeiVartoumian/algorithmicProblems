@@ -1,0 +1,19 @@
+
+middlewatrs
+
+middleware in api servers various purposes and coincidentally sit in the middle of req + response 
+i.e 
+- logging
+- authentication + authorization
+- Data Validation  
+- error Handler 
+
+concept of next in middlewares
+http.handler interface
+    type Handler interface {
+        ServeHTTP(ResponseWriter, *Request)
+    }
+Middle ware pattern 
+Chaining Handlers
+
+by chaning handlers together , a pipleine can be cerated to processes handlers in a spicic way

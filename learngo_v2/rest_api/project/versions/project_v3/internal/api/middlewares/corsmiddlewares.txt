@@ -1,0 +1,10 @@
+
+Cross origin resource sharing
+
+restricts web pages from making requests to a domain 
+that is not the same as the one that serverd the wbe page
+
+what does cors middleware do ?
+allows to conifgure which origins are permitteed to access resources
+
+browser checks server resonse and includes appropriate headers
