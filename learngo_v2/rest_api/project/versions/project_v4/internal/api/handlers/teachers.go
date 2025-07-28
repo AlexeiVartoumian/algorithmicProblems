@@ -3,20 +3,27 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"restapi/internal/api/repository/sqlconnect"
 	"restapi/models"
 	"strconv"
 	"strings"
+	"sync"
+)
+
+// searching in a map is faster then in a slice
+var (
+	teachers = make(map[int]models.Teacher)
+	mutex    = &sync.Mutex{}
+	nextID   = 1
 )
 
 // get method old way
-func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
+func GetTeachersHandler(w http.ResponseWriter, r *http.Request) {
 
-	var Students []models.Student
-	Students, err := sqlconnect.GetStudentsDbHandler(Students, r)
+	var teachers []models.Teacher
+	teachers, err := sqlconnect.GetTeachersDbHandler(teachers, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -26,18 +33,18 @@ func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
 	response := struct {
 		Status string           `json:"status"`
 		Count  int              `json:"count"`
-		Data   []models.Student `json:"data"`
+		Data   []models.Teacher `json:"data"`
 	}{
 		Status: "success",
-		Count:  len(Students),
-		Data:   Students,
+		Count:  len(teachers),
+		Data:   teachers,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
 }
 
-func GetOneStudentHandler(w http.ResponseWriter, r *http.Request) {
+func GetOneTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	//using golang 1.22 v extracting handler {id}
 	idStr := r.PathValue("id")
@@ -49,80 +56,33 @@ func GetOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//TODO will refactor for errror handiling
-	Student, err := sqlconnect.GetStudentById(id)
+	teacher, err := sqlconnect.GetTeacherById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
 
-	json.NewEncoder(w).Encode(Student)
+	json.NewEncoder(w).Encode(teacher)
 }
 
 // post operation get incoming request part of request body
-func AddStudentHandler(w http.ResponseWriter, r *http.Request) {
+func AddTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	// mutex.Lock()
 	// defer mutex.Unlock()
 
-	var newStudents []models.Student
-	var rawStudents []map[string]interface{}
+	var newTeachers []models.Teacher
 
-	//request body becomes empty once used
-	body, err := io.ReadAll(r.Body)
 	// need to pass in pointed value
-	//err := json.NewDecoder(r.Body).Decode(&newStudents)
-	if err != nil {
-		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	//err = json.NewDecoder(r.Body).Decode(&rawStudents)
-	err = json.Unmarshal(body, &rawStudents)
-
+	err := json.NewDecoder(r.Body).Decode(&newTeachers)
 	if err != nil {
 		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
 	}
 
-	fields := GetFieldNames(models.Student{})
-
-	allowedFields := make(map[string]struct{})
-	for _, field := range fields {
-		allowedFields[field] = struct{}{}
-	}
-
-	for _, Student := range rawStudents {
-		for key := range Student {
-			_, ok := allowedFields[key]
-			if !ok {
-				http.Error(w, "Unaccpetable field found in request. onl use allowed fields", http.StatusBadRequest)
-				return
-			}
-		}
-	}
-	err = json.Unmarshal(body, &newStudents)
-	if err != nil {
-		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
-		return
-	}
-
-	//adding data validation
-	for _, Student := range newStudents {
-		// if Student.FirstName == "" || Student.LastName == "" || Student.Email == "" || Student.Class == "" || Student.Subject == "" {
-		// 	http.Error(w, "All fields are required", http.StatusBadRequest)
-		// 	return
-		// }
-		err := CheckBlankFields(Student)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
-
-	addedStudents, err := sqlconnect.AddStudentsDBHandler(newStudents)
+	addedTeachers, err := sqlconnect.AddTeachersDBHandler(newTeachers)
 	if err != nil {
 
-		//err.Error() is being sources from the utility func used by addStudentsdnhandler
+		//err.Error() is being sources from the utility func used by addteachersdnhandler
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -134,17 +94,17 @@ func AddStudentHandler(w http.ResponseWriter, r *http.Request) {
 	response := struct {
 		Status string           `json:"status"`
 		Count  int              `json:"count"`
-		Data   []models.Student `json:"data"`
+		Data   []models.Teacher `json:"data"`
 	}{
 		Status: "success",
-		Count:  len(addedStudents),
-		Data:   addedStudents,
+		Count:  len(addedTeachers),
+		Data:   addedTeachers,
 	}
 	json.NewEncoder(w).Encode(response)
 }
 
-// Put /Students
-func UpdateStudentHandler(w http.ResponseWriter, r *http.Request) {
+// Put /teachers
+func UpdateTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
@@ -155,14 +115,14 @@ func UpdateStudentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updatedStudent models.Student
-	err = json.NewDecoder(r.Body).Decode(&updatedStudent)
+	var updatedTeacher models.Teacher
+	err = json.NewDecoder(r.Body).Decode(&updatedTeacher)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Invalid request payload", http.StatusInternalServerError)
 	}
 
-	updatedStudentFromDb, err := sqlconnect.UpdateStudent(id, updatedStudent)
+	updatedTeacherFromDb, err := sqlconnect.UpdateTeacher(id, updatedTeacher)
 	if err != nil {
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -170,12 +130,12 @@ func UpdateStudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(updatedStudentFromDb)
+	json.NewEncoder(w).Encode(updatedTeacherFromDb)
 
 }
 
-// patch /Students/
-func PatchStudentsHandler(w http.ResponseWriter, r *http.Request) {
+// patch /teachers/
+func PatchTeachersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// a list of map key val = string : interface
 	var updates []map[string]interface{}
@@ -185,7 +145,7 @@ func PatchStudentsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request Payload", http.StatusBadRequest)
 		return
 	}
-	err = sqlconnect.PatchStudents(updates)
+	err = sqlconnect.PatchTeachers(updates)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -194,10 +154,10 @@ func PatchStudentsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// patch /Students/{id]}
-func PatchOneStudentHandler(w http.ResponseWriter, r *http.Request) {
+// patch /teachers/{id]}
+func PatchOneTeachersHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := strings.TrimPrefix(r.URL.Path, "/Students/")
+	idStr := strings.TrimPrefix(r.URL.Path, "/teachers/")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
@@ -213,7 +173,7 @@ func PatchOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusInternalServerError)
 	}
 
-	existingStudent, err := sqlconnect.PatchOneStudent(id, updates)
+	existingTeacher, err := sqlconnect.PatchOneTeacher(id, updates)
 	if err != nil {
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -221,11 +181,11 @@ func PatchOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(existingStudent)
+	json.NewEncoder(w).Encode(existingTeacher)
 
 }
 
-func DeleteOneStudentHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteOneTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.PathValue("id")
 
@@ -237,7 +197,7 @@ func DeleteOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = sqlconnect.DeleteOneStudent(id)
+	err = sqlconnect.DeleteOneTeacher(id)
 	if err != nil {
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -250,13 +210,13 @@ func DeleteOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 		Status string `json:"status"`
 		ID     int    `json:"id"`
 	}{
-		Status: "Student successfully deleted",
+		Status: "Teacher successfully deleted",
 		ID:     id,
 	}
 	json.NewEncoder(w).Encode(response)
 }
 
-func DeleteStudentHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	//extract multiple ids
 	var ids []int
@@ -266,7 +226,7 @@ func DeleteStudentHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	deletedIds, err := sqlconnect.DeleteStudents(ids)
+	deletedIds, err := sqlconnect.DeleteTeachers(ids)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -278,7 +238,7 @@ func DeleteStudentHandler(w http.ResponseWriter, r *http.Request) {
 		Status     string `json:"status"`
 		DeletedIDs []int  `json:"deleted_ids"`
 	}{
-		Status:     "Students successfully deleted",
+		Status:     "Teachers successfully deleted",
 		DeletedIDs: deletedIds,
 	}
 	json.NewEncoder(w).Encode(response)

@@ -1,0 +1,22 @@
+
+http parameter pollution
+
+what is parameter pollution 
+
+consider in req body the following is sent in one shot
+
+Name: John
+Name: Jane
+
+i.e https://localhost:3000/execs/?country=US&country=AU&name=Jack&name=john
+
+then in the response which is caprtured in map string
+Query : map[country:[us au] name:[jack john]]
+
+and extracting the name
+name: Jack  -> only one name is returned 
+
+parameter pollution occurs when multiple parameters with the same nare are sent in http reqiest.
+can lead to unexpected hbehabvouir data corruption or vulnerablities in the app .
+
+hpp (http parameter pollution code) middleware configures how to handle duplicate parameteres
