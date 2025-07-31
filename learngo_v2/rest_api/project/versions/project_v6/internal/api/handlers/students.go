@@ -13,10 +13,10 @@ import (
 )
 
 // get method old way
-func GetExecsHandler(w http.ResponseWriter, r *http.Request) {
+func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
 
-	var Execs []models.Exec
-	Execs, err := sqlconnect.GetExecsDbHandler(Execs, r)
+	var Students []models.Student
+	Students, err := sqlconnect.GetStudentsDbHandler(Students, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -24,20 +24,20 @@ func GetExecsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// can immediately intiailize the struct right after declaring it as one off ops
 	response := struct {
-		Status string        `json:"status"`
-		Count  int           `json:"count"`
-		Data   []models.Exec `json:"data"`
+		Status string           `json:"status"`
+		Count  int              `json:"count"`
+		Data   []models.Student `json:"data"`
 	}{
 		Status: "success",
-		Count:  len(Execs),
-		Data:   Execs,
+		Count:  len(Students),
+		Data:   Students,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
 }
 
-func GetOneExecsHandler(w http.ResponseWriter, r *http.Request) {
+func GetOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 
 	//using golang 1.22 v extracting handler {id}
 	idStr := r.PathValue("id")
@@ -49,50 +49,50 @@ func GetOneExecsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//TODO will refactor for errror handiling
-	Exec, err := sqlconnect.GetExecById(id)
+	Student, err := sqlconnect.GetStudentById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
 
-	json.NewEncoder(w).Encode(Exec)
+	json.NewEncoder(w).Encode(Student)
 }
 
 // post operation get incoming request part of request body
-func AddExecsHandler(w http.ResponseWriter, r *http.Request) {
+func AddStudentHandler(w http.ResponseWriter, r *http.Request) {
 	// mutex.Lock()
 	// defer mutex.Unlock()
 
-	var newExecs []models.Exec
-	var rawExecs []map[string]interface{}
+	var newStudents []models.Student
+	var rawStudents []map[string]interface{}
 
 	//request body becomes empty once used
 	body, err := io.ReadAll(r.Body)
 	// need to pass in pointed value
-	//err := json.NewDecoder(r.Body).Decode(&newExecs)
+	//err := json.NewDecoder(r.Body).Decode(&newStudents)
 	if err != nil {
 		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
-	//err = json.NewDecoder(r.Body).Decode(&rawExecs)
-	err = json.Unmarshal(body, &rawExecs)
+	//err = json.NewDecoder(r.Body).Decode(&rawStudents)
+	err = json.Unmarshal(body, &rawStudents)
 
 	if err != nil {
 		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
 	}
 
-	fields := GetFieldNames(models.Exec{})
+	fields := GetFieldNames(models.Student{})
 
 	allowedFields := make(map[string]struct{})
 	for _, field := range fields {
 		allowedFields[field] = struct{}{}
 	}
 
-	for _, Exec := range rawExecs {
-		for key := range Exec {
+	for _, Student := range rawStudents {
+		for key := range Student {
 			_, ok := allowedFields[key]
 			if !ok {
 				http.Error(w, "Unaccpetable field found in request. onl use allowed fields", http.StatusBadRequest)
@@ -100,29 +100,29 @@ func AddExecsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	err = json.Unmarshal(body, &newExecs)
+	err = json.Unmarshal(body, &newStudents)
 	if err != nil {
 		http.Error(w, "INvalid Request Body", http.StatusBadRequest)
 		return
 	}
 
 	//adding data validation
-	for _, Exec := range newExecs {
-		// if Exec.FirstName == "" || Exec.LastName == "" || Exec.Email == "" || Exec.Class == "" || Exec.Subject == "" {
+	for _, Student := range newStudents {
+		// if Student.FirstName == "" || Student.LastName == "" || Student.Email == "" || Student.Class == "" || Student.Subject == "" {
 		// 	http.Error(w, "All fields are required", http.StatusBadRequest)
 		// 	return
 		// }
-		err := CheckBlankFields(Exec)
+		err := CheckBlankFields(Student)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 	}
 
-	addedExecs, err := sqlconnect.AddExecsDBHandler(newExecs)
+	addedStudents, err := sqlconnect.AddStudentsDBHandler(newStudents)
 	if err != nil {
 
-		//err.Error() is being sources from the utility func used by addExecsdnhandler
+		//err.Error() is being sources from the utility func used by addStudentsdnhandler
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -132,19 +132,50 @@ func AddExecsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// can immediately intiailize the struct right after declaring it as one off ops
 	response := struct {
-		Status string        `json:"status"`
-		Count  int           `json:"count"`
-		Data   []models.Exec `json:"data"`
+		Status string           `json:"status"`
+		Count  int              `json:"count"`
+		Data   []models.Student `json:"data"`
 	}{
 		Status: "success",
-		Count:  len(addedExecs),
-		Data:   addedExecs,
+		Count:  len(addedStudents),
+		Data:   addedStudents,
 	}
 	json.NewEncoder(w).Encode(response)
 }
 
-// patch /Execs/
-func PatchExecsHandler(w http.ResponseWriter, r *http.Request) {
+// Put /Students
+func UpdateStudentHandler(w http.ResponseWriter, r *http.Request) {
+
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	var updatedStudent models.Student
+	err = json.NewDecoder(r.Body).Decode(&updatedStudent)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid request payload", http.StatusInternalServerError)
+	}
+
+	updatedStudentFromDb, err := sqlconnect.UpdateStudent(id, updatedStudent)
+	if err != nil {
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedStudentFromDb)
+
+}
+
+// patch /Students/
+func PatchStudentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// a list of map key val = string : interface
 	var updates []map[string]interface{}
@@ -154,7 +185,7 @@ func PatchExecsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request Payload", http.StatusBadRequest)
 		return
 	}
-	err = sqlconnect.PatchExecs(updates)
+	err = sqlconnect.PatchStudents(updates)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -163,14 +194,14 @@ func PatchExecsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// patch /Execs/{id]}
-func PatchOneExecHandler(w http.ResponseWriter, r *http.Request) {
+// patch /Students/{id]}
+func PatchOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := strings.TrimPrefix(r.URL.Path, "/execs/")
+	idStr := strings.TrimPrefix(r.URL.Path, "/Students/")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-
+		log.Println(err)
 		http.Error(w, "Invalid id", http.StatusBadRequest)
 		return
 	}
@@ -179,10 +210,10 @@ func PatchOneExecHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&updates)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "invalid request payload", http.StatusBadRequest)
+		http.Error(w, "Invalid request payload", http.StatusInternalServerError)
 	}
 
-	existingExec, err := sqlconnect.PatchOneExec(id, updates)
+	existingStudent, err := sqlconnect.PatchOneStudent(id, updates)
 	if err != nil {
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -190,11 +221,11 @@ func PatchOneExecHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(existingExec)
+	json.NewEncoder(w).Encode(existingStudent)
 
 }
 
-func DeleteOneExecHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteOneStudentHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.PathValue("id")
 
@@ -206,7 +237,7 @@ func DeleteOneExecHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = sqlconnect.DeleteOneExec(id)
+	err = sqlconnect.DeleteOneStudent(id)
 	if err != nil {
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -219,8 +250,36 @@ func DeleteOneExecHandler(w http.ResponseWriter, r *http.Request) {
 		Status string `json:"status"`
 		ID     int    `json:"id"`
 	}{
-		Status: "Exec successfully deleted",
+		Status: "Student successfully deleted",
 		ID:     id,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func DeleteStudentHandler(w http.ResponseWriter, r *http.Request) {
+
+	//extract multiple ids
+	var ids []int
+	err := json.NewDecoder(r.Body).Decode(&ids)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	deletedIds, err := sqlconnect.DeleteStudents(ids)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	response := struct {
+		Status     string `json:"status"`
+		DeletedIDs []int  `json:"deleted_ids"`
+	}{
+		Status:     "Students successfully deleted",
+		DeletedIDs: deletedIds,
 	}
 	json.NewEncoder(w).Encode(response)
 }

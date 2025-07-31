@@ -51,3 +51,31 @@ class VARCHAR(255) not null ,
 subject VARCHAR(255) not null,
 index (email)
 ) auto_increment=100;
+
+CREATE INDEX idc class ON teacher(class);
+CREATE table if not exists students (
+    id int auto_increment primary key ,
+    first_name VARCHAR(255) not NULL,
+    last_name VARCHAR(255) not null,
+    email VARCHAR(255) not null UNIQUE,
+    class VARCHAR(255) not null ,
+    index (email)
+    Foreign key (class) REFERENCES teachers(class)
+)AUTO_INCREMENTE=100
+
+USE school;
+create table if not exists execs (
+	id int auto_increment primary key,
+	first_name VARCHAR(255) not null ,
+	last_name VARCHAR(255) not null , 
+	email VARCHAR(255) not null UNIQUE,
+	username VARCHAR(255) not null ,
+	password VARCHAR(255) not null , 
+	password_changed VARCHAR(255) not null ,
+	user_created_at TIMESTAMP default current_timestamp ,
+	password_reset_token VARCHAR(255),
+	inactive_status BOOLEAN not null ,
+	role VARCHAR(50) not null,
+	index idx_email (email),
+	index idx_username (username)
+) engine=InnoDb;
