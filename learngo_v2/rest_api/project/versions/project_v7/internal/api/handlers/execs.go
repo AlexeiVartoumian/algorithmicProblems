@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"crypto/subtle"
+	"database/sql"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/argon2"
 )
 
 // get method old way
@@ -243,9 +249,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// search ofr user if exist in db
 
-	user, err := sqlconnect.GetUserByUserName(req.UserName)
+	db, err := sqlconnect.ConnectDb()
 	if err != nil {
-		http.Error(w, "invalid username or password", http.StatusBadRequest)
+
+		utils.ErrorHandler(err, "err conneciting to db")
+		http.Error(w, "error connecting to database", http.StatusBadRequest)
+	}
+	defer db.Close()
+
+	//query and scan into a user stuct
+	user := &models.Exec{}
+	db.QueryRow(`SELECT id , first_name, last_name , email , username, password , inactive_status , role FROM execs WHERE username = ?`, req.UserName).Scan(&user.ID, &user.FirstName,
+		&user.LastName, &user.Email, &user.UserName, &user.Password, &user.InactiveStatus, &user.Role)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			utils.ErrorHandler(err, "user not found ")
+			http.Error(w, "User not found", http.StatusBadRequest)
+			return
+		}
+		http.Error(w, "database query error", http.StatusBadRequest)
 		return
 	}
 	//user active
@@ -254,9 +277,46 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Account is inaceive", http.StatusBadRequest)
 	}
 	//verify pass retrieved from db and split by .
-	err = utils.VerifyPassword(req.Password, user.Password)
+
+	parts := strings.Split(user.Password, ".")
+
+	if len(parts) != 2 {
+		utils.ErrorHandler(errors.New("invalid encoded hash format"), "invalid encoded has format")
+		http.Error(w, "invalid encoded hash format", http.StatusForbidden)
+		return
+	}
+	saltBase64 := parts[0]
+	hashedPasswordBase64 := parts[1]
+	//then decode the base64 format
+	salt, err := base64.StdEncoding.DecodeString(saltBase64)
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.ErrorHandler(err, "failed to decode the hashed password")
+		http.Error(w, "failed to decode the hashed password", http.StatusForbidden)
+	}
+
+	hashedPassword, err := base64.StdEncoding.DecodeString(hashedPasswordBase64)
+
+	if err != nil {
+		utils.ErrorHandler(err, "failed to decode the hashed password")
+		http.Error(w, "failed to decode the hashed password", http.StatusForbidden)
+	}
+
+	//compare this hash to the one stored in the db
+	hash := argon2.IDKey([]byte(req.Password), salt, 1, 64*1024, 4, 32)
+
+	//compare length of hash as first check
+	if len(hash) != len(hashedPassword) {
+		utils.ErrorHandler(errors.New("incorrect password"), "incorrect password")
+		http.Error(w, "incorrect password", http.StatusForbidden)
+		return
+	}
+	// second round of comparing hash
+	if subtle.ConstantTimeCompare(hash, hashedPassword) == 1 {
+		//do nothing
+	} else {
+		utils.ErrorHandler(errors.New("incorrect password"), "incorrect password")
+		http.Error(w, "incorrect password", http.StatusForbidden)
 		return
 	}
 	//gen jwt token
@@ -264,8 +324,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println()
 	tokenString, err := utils.SignToken(user.ID, req.UserName, user.Role)
 	if err != nil {
-		http.Error(w, "Could not create login token", http.StatusInternalServerError)
-		return
+		http.Error(w, "Could not create token", http.StatusInternalServerError)
 	}
 
 	// send token as response or as cookie
@@ -276,7 +335,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Secure:   true,
 		Expires:  time.Now().Add(24 * time.Hour),
-		SameSite: http.SameSiteStrictMode,
 	})
 	//can set multiple cookie
 	http.SetCookie(w, &http.Cookie{
@@ -286,7 +344,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Secure:   true,
 		Expires:  time.Now().Add(24 * time.Hour),
-		SameSite: http.SameSiteStrictMode,
 	})
 	// in practise only send jwt token as a cookie no need for header
 	w.Header().Set("Content-Type", "application/json")
@@ -296,23 +353,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Token: tokenString,
 	}
 	json.NewEncoder(w).Encode(response)
-}
-
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// removing stuff from client side making sure tokens cant be used no more
-
-	// clear jwt cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "Bearer",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		Expires:  time.Unix(0, 0),
-		SameSite: http.SameSiteStrictMode,
-	})
-	w.Header().Set("Content-Type", "application-type/json")
-	w.Write([]byte(`{"message": "Logged out successfully"}`))
-
-	// blacklist jwt and check against middleware?
 }
