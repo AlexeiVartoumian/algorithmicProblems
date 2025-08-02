@@ -1,0 +1,10 @@
+compression reduces size of response body decreasing loading times
+- advantageous for apps with high trafiic or big payloads
+
+
+when it might not be needed 
+- small payloads
+- already compressed assets
+- cpu overhead 
+consider usecase i.e rednering web pages iamges graphix  then good use case 
+but if a static website then samll gain
