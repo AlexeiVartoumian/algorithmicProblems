@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"restapi/internal/api/repository/sqlconnect"
 	"restapi/models"
-	"restapi/pkg/utils"
 	"strconv"
 	"strings"
 	"sync"
@@ -320,13 +319,9 @@ func GetStudentsByTeachersId(w http.ResponseWriter, r *http.Request) {
 
 func GetStudentCountByTeacherId(w http.ResponseWriter, r *http.Request) {
 
-	// admin , manaber ,exec can use below ffor rolebased access
-	_, err := utils.AuthorizeUser(r.Context().Value(utils.ContextKey("role")).(string), "exec", "manager", "admin")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	teacherId := r.PathValue("id")
+
+	var studentCount int
 
 	studentCount, err := sqlconnect.GetStudentCountByTeacherIdFromDb(teacherId)
 	if err != nil {

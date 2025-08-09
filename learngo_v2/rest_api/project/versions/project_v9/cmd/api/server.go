@@ -10,7 +10,6 @@ import (
 	"restapi/internal/api/repository/sqlconnect"
 	router "restapi/internal/api/routers"
 	"restapi/versions/project_v6/pkg/utils"
-	"time"
 
 	"github.com/joho/godotenv" //this package grabs env vars from the env file and anot the os
 )
@@ -53,28 +52,27 @@ func main() {
 		MinVersion: tls.VersionTLS12,
 	}
 
-	rl := mw.NewRateLimiter(5, time.Minute)
+	// rl := mw.NewRateLimiter(5, time.Minute)
 
-	hppOptions := mw.HPPOptions{
-		CheckQuery:                  true,
-		CheckBody:                   true,
-		CheckBodyOnlyForContentType: "application/x-www-form-urlencoded",
-		Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"}, //allow known fields
-	}
+	// hppOptions := mw.HPPOptions{
+	// 	CheckQuery:                  true,
+	// 	CheckBody:                   true,
+	// 	CheckBodyOnlyForContentType: "application/x-www-form-urlencoded",
+	// 	Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"}, //allow known fields
+	// }
+
+	//secureMux := mw.Cors(rl.Middleware(mw.ResponseTimeMiddleware(mw.SecurityHeaders(mw.Compression(mw.Hpp(hppOptions)(mux))))))
+
+	//secureMux := utils.ApplyMiddlewares(mux, mw.Hpp(hppOptions), mw.Compression, mw.ResponseTimeMiddleware, rl.Middleware, mw.Cors)
 
 	//router := router.Router()
 	router := router.MainRouter()
-	jwtMiddleware := mw.MiddlewaresExcludePaths(mw.JWTMiddleware, "/execs/login", "/execs/forgotpassword", "/execs/resetpassword/reset")
-
-	// prder of ops is from cors to securityheaders i.e cors fires first security headers last
-	secureMux := utils.ApplyMiddlewares(router, mw.SecurityHeaders, mw.Compression, mw.Hpp(hppOptions), mw.XSSMiddleware, jwtMiddleware,
-		mw.ResponseTimeMiddleware, rl.Middleware, mw.Cors)
-
+	//jwtMiddleware := mw.MiddlewaresExcludePaths(mw.JWTMiddleware, "/execs/login", "/execs/forgotpassword", "/execs/resetpassword/reset")
 	//secureMux := mw.JWTMiddleware(mw.SecurityHeaders(router))
 	//secureMux := mw.SecurityHeaders(router)
 	//secureMux := mw.JWTMiddleware(mw.SecurityHeaders(router))
-
-	//secureMux := mw.XSSMiddleware(router)
+	//secureMux := jwtMiddleware(mw.SecurityHeaders(router))
+	secureMux := mw.XSSMiddleware(router)
 	server := &http.Server{
 		Addr: port,
 		//Handler:   middlewares.SecurityHeaders(mux), // refer to middlewares.mux for diff on handler func vs handlefunc
