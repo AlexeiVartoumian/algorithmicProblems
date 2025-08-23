@@ -31,3 +31,26 @@ commands ran
 go mod init simpleapimodule
 go get golang.org/x/net/http2
 go mod tidy
+
+to build a binary
+
+go build -o name_of_binary.exe accesspoint.go
+
+eg
+go buil -o rest_api server.go
+
+the above build command will only run on the same operating system and architect .
+if we want it to be interoperable then below flags
+operating system acecepts many -> linux , macos/darwin , windows , bsd , open bsd
+and architect is good for - amd64 (64-bit x86 ) = intel + amd then arm 32-bit ARM and arm64(64-bit ARM)
+
+below is eg for mac os binary
+GOOS=darwin GOARCH=arm64 go build -o rest_api_macOS_arm64 server.go
+
+GOOS=windows GOARCH=amd64 go build -o binaries/win/rest_api_windows_X86-64 server.go
+GOOS=linux GOARCH=amd64 go build -o binaries/win/rest_api_linux_X86-64 server.go
+
+to obfuscate binaries can use below packages
+also go install mvdan.cc/garble@latest
+garble build [build flags] [packages]
+garble build -o rest_api_server.go

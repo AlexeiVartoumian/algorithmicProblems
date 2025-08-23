@@ -2,18 +2,62 @@ package main
 
 import (
 	"crypto/tls"
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	mw "restapi/internal/api/middlewares"
-	"restapi/internal/api/repository/sqlconnect"
 	router "restapi/internal/api/routers"
 	"restapi/versions/project_v6/pkg/utils"
 	"time"
 
 	"github.com/joho/godotenv" //this package grabs env vars from the env file and anot the os
 )
+
+// below is eg for mac os binary
+// GOOS=darwin GOARCH=arm64 go build -o rest_api_macOS_arm64 server.go
+
+// GOOS=windows GOARCH=amd64 go build -o binaries/win/rest_api_windows_X86-64 server.go
+// GOOS=linux GOARCH=amd64 go build -o binaries/win/rest_api_linux_X86-64 server.go
+
+// not do to in prod i.e using .env file but for practise can use embd file to pass in to create a binary need to explicitly add the comment below for embed to wrk
+//
+//go:embed .env
+var envFile embed.FS
+
+func loadEnvFromEmbeddedFile() {
+	// read the embedded .env file
+	content, err := envFile.ReadFile(".env")
+	if err != nil {
+		log.Fatalf("error reading .envfile %v", err)
+	}
+
+	//create a temp file to loaf the variables
+	tempfile, err := os.CreateTemp("", ".env")
+	if err != nil {
+		log.Fatalf("Error creating temp .env file %v", err)
+	}
+	defer os.Remove(tempfile.Name())
+
+	//write contents of the emebded .env file to the temp file
+	_, err = tempfile.Write(content)
+	if err != nil {
+		log.Fatalf("Error writing to temp .env file %v", err)
+	}
+
+	err = tempfile.Close()
+	if err != nil {
+		log.Fatalf("Error closing temp file %v", err)
+		return
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error Loading envfile %v", err)
+		return
+	}
+}
 
 type User struct {
 	Name string `json:"name"`
@@ -30,24 +74,23 @@ type User struct {
 
 func main() {
 
-	//define once use everywher
-	err := godotenv.Load()
+	//define once use everywher not a production use case function is for binary
+	loadEnvFromEmbeddedFile()
 
-	if err != nil {
-		utils.ErrorHandler(err, "")
-		return
-	}
+	// err := godotenv.Load()
 
-	_, err = sqlconnect.ConnectDb()
+	// if err != nil {
+	// 	utils.ErrorHandler(err, "")
+	// 	return
+	// }
 
-	if err != nil {
-		fmt.Println("Error----", err)
-		return
-	}
 	port := os.Getenv("API_PORT")
 
-	cert := "cert.pem"
-	key := "key.pem"
+	// cert := "cert.pem"
+	// key := "key.pem"
+
+	cert := os.Getenv("CERT_FILE")
+	key := os.Getenv("KEY_FILE")
 
 	tlsConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
@@ -84,7 +127,7 @@ func main() {
 		TLSConfig: tlsConfig,
 	}
 	fmt.Println("server is runnong on port", port)
-	err = server.ListenAndServeTLS(cert, key)
+	err := server.ListenAndServeTLS(cert, key)
 
 	if err != nil {
 		log.Fatalln("Error starting the server")
