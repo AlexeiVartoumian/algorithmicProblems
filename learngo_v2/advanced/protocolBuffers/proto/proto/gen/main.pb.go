@@ -4,9 +4,11 @@
 // 	protoc        v6.32.0
 // source: main.proto
 
-package mainpb
+package mainwithservicepb
 
 import (
+	gen "./proto/gen"
+	user "/proto/gen/user"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -174,7 +176,7 @@ var File_main_proto protoreflect.FileDescriptor
 const file_main_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"main.proto\x12\x04main\"4\n" +
+	"main.proto\x12\x04main\x1a\x0fuser/user.proto\x1a\vorder.proto\"4\n" +
 	"\fHelloRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03age\x18\x02 \x01(\x05R\x03age\"2\n" +
@@ -182,8 +184,11 @@ const file_main_proto_rawDesc = "" +
 	"\fconf_message\x18\x01 \x01(\tR\vconfMessage\"?\n" +
 	"\vUserProfile\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05emailB\n" +
-	"Z\b/;mainpbb\x06proto3"
+	"\x05email\x18\x02 \x01(\tR\x05email2a\n" +
+	"\aGreeter\x123\n" +
+	"\bSayHello\x12\x12.main.HelloRequest\x1a\x13.main.HelloResponse\x12!\n" +
+	"\x06Orders\x12\n" +
+	".user.User\x1a\v.main.OrderB\x1eZ\x1c/proto/gen;mainwithservicepbb\x06proto3"
 
 var (
 	file_main_proto_rawDescOnce sync.Once
@@ -202,10 +207,16 @@ var file_main_proto_goTypes = []any{
 	(*HelloRequest)(nil),  // 0: main.HelloRequest
 	(*HelloResponse)(nil), // 1: main.HelloResponse
 	(*UserProfile)(nil),   // 2: main.UserProfile
+	(*user.User)(nil),     // 3: user.User
+	(*gen.Order)(nil),     // 4: main.Order
 }
 var file_main_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: main.Greeter.SayHello:input_type -> main.HelloRequest
+	3, // 1: main.Greeter.Orders:input_type -> user.User
+	1, // 2: main.Greeter.SayHello:output_type -> main.HelloResponse
+	4, // 3: main.Greeter.Orders:output_type -> main.Order
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -224,7 +235,7 @@ func file_main_proto_init() {
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_main_proto_goTypes,
 		DependencyIndexes: file_main_proto_depIdxs,

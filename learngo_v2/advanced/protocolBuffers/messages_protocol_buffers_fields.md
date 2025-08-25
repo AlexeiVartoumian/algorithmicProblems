@@ -23,3 +23,10 @@ best practise
 use meaningful names
 avoid chaing field numbers once assigned
 
+
+assiging unique field numbersin a message 
+- each field in a message is assigned a unique field unumber used interanlly for serialization and deserialization .
+they help to maintian backward and forward compatability 
+
+reserved keyword
+- used to mark field numbers or names as unavailable for future yse . helps to maintain backwards compatability
