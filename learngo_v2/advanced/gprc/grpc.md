@@ -2,6 +2,11 @@
 
 grpc is open source rpc framework .
 
+generating grpc code
+protoc --go_out=. --go-grpc_out=. proto/main.proto 
+
+the above command wil generated the code into seprate files for the messages and another for the rpc and services
+
 users http2 for transport and protocol buffers as interface 
 
 provides features including auth and load balanncing
@@ -9,6 +14,7 @@ provides features including auth and load balanncing
 can multiplex multiple requests over a single connection
 
 uses protocal buffers to define structure of message and ensuring type safety
+
 
 simplified overview
 services are defiend and its methods with .proto file
