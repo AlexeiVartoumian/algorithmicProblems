@@ -2,7 +2,7 @@ https://httptoolkit.com/blog/http3-quic-open-source-support-nowhere/
 https://medium.com/tech-internals-conf/http-3-shiny-new-thing-or-more-issues-6e4fe14e52ea
 generating a self signed cetificate to imple a tls server
 
-openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
+
 
 generated self-signed certificates using OpenSSL.
 
