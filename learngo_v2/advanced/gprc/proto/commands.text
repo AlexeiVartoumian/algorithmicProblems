@@ -1,0 +1,12 @@
+
+
+protoc --go_out=. --go-grpc_out=. --go-grpc_out=. proto/main.proto 
+
+
+-I for more than one file
+protoc -I=proto --go_out=. --go-grpc_out=. proto/main.proto proto/greeter.proto
+
+protoc -I=proto --go_out=. --go-grpc_out=. proto/main.proto proto/greeter.proto proto/farewell/farewell.proto
+
+
+go get google.golang.org/grpc

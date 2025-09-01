@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	mainpipb "simplegprcserver/proto/gen"
+	farewellpb "simplegprcserver/proto/gen/farewell"
 	"time"
 
 	"google.golang.org/grpc"
@@ -12,7 +13,8 @@ import (
 
 func main() {
 
-	cert := "../cert.pem"
+	//cert := "../cert.pem"
+	cert := "C:/Users/wwwal/Documents/algorithmicProblems/learngo_v2/advanced/gprc/cert.pem"
 	creds, err := credentials.NewClientTLSFromFile(cert, "")
 	if err != nil {
 		log.Fatalln("did not connect", err)
@@ -32,6 +34,11 @@ func main() {
 
 	client := mainpipb.NewCalculateClient(conn)
 
+	//need seprate clients for seprate services
+	client2 := mainpipb.NewGreeterClient(conn)
+
+	client3 := farewellpb.NewAufWiedersehenClient(conn)
+
 	// once client has been crested can now
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -44,4 +51,27 @@ func main() {
 		log.Fatalln("could not add", err)
 	}
 	log.Println("Sum", res.Sum)
+
+	reqGreet := &mainpipb.HelloRequest{
+		Name: "John",
+	}
+	res1, err := client2.Greet(ctx, reqGreet)
+	if err != nil {
+		log.Fatalln("Could not greet", err)
+	}
+
+	reqGoodBye := &farewellpb.GoodByeRequest{
+		Name: "Jane",
+	}
+
+	resFw, err := client3.BidGoodBye(ctx, reqGoodBye)
+	if err != nil {
+		log.Fatalln("Could not bid Goodbye", err)
+	}
+
+	log.Println("Sum", res.Sum)
+	log.Println("Greet", res1.Message)
+	log.Println("Goodbye message", resFw.Message)
+	state := conn.GetState()
+	log.Println("Conneciton State", state)
 }

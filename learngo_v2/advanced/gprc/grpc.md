@@ -2,10 +2,13 @@
 
 grpc is open source rpc framework .
 
-generating grpc code
+
+generating grpc code please refer to protocol buffers section to see how to install protoc 
+
 protoc --go_out=. --go-grpc_out=. proto/main.proto 
 
 the above command wil generated the code into seprate files for the messages and another for the rpc and services
+
 
 users http2 for transport and protocol buffers as interface 
 
