@@ -2,6 +2,7 @@ package main
 
 import (
 	mainpb "grpcstreams/proto/gen"
+	"io"
 	"log"
 	"net"
 	"time"
@@ -29,6 +30,24 @@ func (s *server) GenerateFibonacci(req *mainpb.FibonacciReqest, stream mainpb.Ca
 		time.Sleep(time.Second)
 	}
 	return nil
+}
+
+// function signature here is different the request type is stream
+func (s *server) SendNumbers(stream mainpb.Calculator_SendNumbersServer) error {
+	var sum int32
+	//similar to channel this is an incoming stream so need an infinite llop
+	for {
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&mainpb.NumberResponse{Sum: sum})
+		}
+		if err != nil {
+			return err
+		}
+		log.Println(req.GetNumber())
+		sum += req.GetNumber()
+	}
 }
 
 func main() {

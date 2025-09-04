@@ -7,10 +7,18 @@ option go_package = "/proto/gen;mainpb";
 service Calculator {
     rpc Add (AddRequest) returns (AddResponse); //unary 
     rpc GenerateFibonacci (FibonacciReqest) returns (stream FibonacciResponse); // send numbers in real time
+    rpc SendNumbers (stream NumberRequest) returns (NumberResponse); // this method is a accepts client stream
 }
 
+message NumberRequest{
+    int32 number = 1;
+}
+
+message NumberResponse {
+    int32 sum = 1;
+}
 message AddRequest {
-    int32 a =1;
+    int32 a = 1;
     int32 b = 2;
 }
 
