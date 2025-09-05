@@ -12,7 +12,6 @@ service Calculate {
 
 service Greeter {
     rpc Greet (HelloRequest) returns (HelloResponse);
-    rpc Add (AddRequest) returns (AddResponse);
 }
 
 message AddRequest {

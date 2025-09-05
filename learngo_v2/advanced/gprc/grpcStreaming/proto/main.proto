@@ -8,6 +8,11 @@ service Calculator {
     rpc Add (AddRequest) returns (AddResponse); //unary 
     rpc GenerateFibonacci (FibonacciReqest) returns (stream FibonacciResponse); // send numbers in real time
     rpc SendNumbers (stream NumberRequest) returns (NumberResponse); // this method is a accepts client stream
+    rpc Chat (stream ChatMessage) returns (stream ChatMessage); //Bi-directional stream
+}
+
+message ChatMessage {
+    string message = 1;
 }
 
 message NumberRequest{
