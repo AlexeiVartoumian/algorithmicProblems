@@ -131,6 +131,10 @@ func main() {
 	grpcServer := grpc.NewServer()
 	mainpb.RegisterCalculatorServer(grpcServer, &server{})
 
+	//can enable reflection in development but no in production for api reqs in postman
+	// if not wanting to import the proto file
+	//reflection.Register(grpcServer)
+
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Fatalln(err)

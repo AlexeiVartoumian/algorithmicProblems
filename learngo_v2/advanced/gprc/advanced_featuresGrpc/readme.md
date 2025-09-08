@@ -27,3 +27,10 @@ grpc.Header
 Trailesrs similar to headers but sent after reponse body  -> can provide additionalo information
 also key value response can convey information at a post date not immediately available
 i.e processing a status or unique identifier for an operation
+
+
+09/08/2025 -> saw how using postman with grpc can be done by going on postman file-> new ->  grpc 
+where there are a number of protocols to chose from .
+from there it was a case of importing the proto file that already generated and running the server. 
+if all goes all well i.e no unimplemented method or some other thing then should be able to initiate client server calls using rpc.
+also saw doing this dynamically with reflection but not a recommended thing for production

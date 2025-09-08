@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package calculator;
 
-option go_package = "/proto/gen;mainpb";
+option go_package = "simpleGprc/proto/gen;mainpb";
 
 service Calculator {
     rpc Add (AddRequest) returns (AddResponse);
