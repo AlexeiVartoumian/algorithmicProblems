@@ -34,3 +34,8 @@ where there are a number of protocols to chose from .
 from there it was a case of importing the proto file that already generated and running the server. 
 if all goes all well i.e no unimplemented method or some other thing then should be able to initiate client server calls using rpc.
 also saw doing this dynamically with reflection but not a recommended thing for production
+
+
+09/12/2025 -> using reflection on the server can use it as a discovery kind of things i.e
+querying the server for avialable methods without sharing proto file downloaded grpcurl
+.\grpcurl -plaintext localhost:50051 list calculator.Calculator
