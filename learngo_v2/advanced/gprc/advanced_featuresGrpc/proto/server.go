@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 	_ "google.golang.org/grpc/encoding/gzip" // use underscore to allow grpc to automatically use gzip but not remove the import
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/reflection"
 )
 
 type server struct {
@@ -133,7 +134,7 @@ func main() {
 
 	//can enable reflection in development but no in production for api reqs in postman
 	// if not wanting to import the proto file
-	//reflection.Register(grpcServer)
+	reflection.Register(grpcServer)
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
